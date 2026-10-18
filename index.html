@@ -1,0 +1,2380 @@
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Перекуп & Уличный Синдикат: PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
+        :root {
+            --bg-dark: #07090e;
+            --card-bg: rgba(16, 21, 30, 0.88);
+            --gold: #f59e0b;
+            --neon-blue: #06b6d4;
+            --neon-green: #10b981;
+            --neon-red: #ef4444;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 10% 15%, rgba(245, 158, 11, 0.08) 0%, transparent 35%),
+                radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 35%);
+            color: #f1f5f9;
+            overflow-x: hidden;
+            user-select: none;
+            padding-bottom: 96px;
+        }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+        }
+        .glass-gold {
+            background: linear-gradient(145deg, rgba(28, 24, 15, 0.92), rgba(14, 17, 23, 0.95));
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.12);
+        }
+        .tab-view { display: none; animation: fadeIn 0.22s ease-out; }
+        .tab-view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-press:active { transform: scale(0.96); }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #07090e; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        .car-stage {
+            background: radial-gradient(ellipse at center bottom, rgba(6, 182, 212, 0.18) 0%, rgba(15, 23, 42, 0.4) 60%, transparent 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        @keyframes pulse-subtle {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.03); opacity: 0.92; }
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ВЕРХНИЙ БАР ПРОФИЛЯ С БЫСТРЫМ ДОСТУПОМ -->
+    <header class="glass sticky top-0 z-40 px-3.5 py-2.5 border-b border-slate-800/80">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div onclick="openProfileModal()" class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 via-yellow-500 to-orange-600 flex items-center justify-center text-slate-950 font-black text-lg shadow-lg shadow-amber-500/20 cursor-pointer btn-press">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <span id="ui-rank" class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">Новичок</span>
+                        <span class="text-[10px] text-slate-400 mono">REP: <b id="ui-rep" class="text-white">1</b></span>
+                    </div>
+                    <div class="text-sm font-black text-white flex items-center gap-1.5 mt-0.5 cursor-pointer" onclick="openProfileModal()">
+                        <span id="ui-name">Перекуп</span>
+                        <i class="fa-solid fa-pen text-[10px] text-slate-400 hover:text-white"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Наличные</div>
+                    <div id="ui-money" class="text-base font-black text-emerald-400 mono">180 000 ₽</div>
+                </div>
+                <button onclick="toggleAudioMute()" id="btn-sound-toggle" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center text-xs btn-press" title="Звуки">
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-cyan-400"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ПАНЕЛЬ БЫСТРОГО ДОСТУПА: ЕЖЕДНЕВНЫЙ БОНУС И КВЕСТЫ -->
+        <div class="max-w-md mx-auto mt-2.5 pt-2 border-t border-slate-800/80 grid grid-cols-2 gap-2">
+            <button onclick="openDailyBonusModal()" id="btn-quick-bonus" class="btn-press flex items-center justify-between px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/15 border border-amber-500/40 text-xs font-bold text-amber-300">
+                <span class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-gift text-amber-400 text-sm"></i>
+                    <span>Бонус</span>
+                </span>
+                <span id="quick-bonus-badge" class="text-[10px] mono font-black bg-amber-500 text-slate-950 px-2 py-0.5 rounded-lg animate-pulse">ГОТОВ!</span>
+            </button>
+            <button onclick="openTab('quests')" id="btn-quick-quests" class="btn-press flex items-center justify-between px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-500/15 border border-cyan-500/40 text-xs font-bold text-cyan-300">
+                <span class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-list-check text-cyan-400 text-sm"></i>
+                    <span>Квесты</span>
+                </span>
+                <span id="quick-quests-badge" class="text-[10px] mono font-black bg-cyan-500 text-slate-950 px-2 py-0.5 rounded-lg">0 / 14</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <main class="max-w-md mx-auto p-3.5 space-y-4">
+
+        <!-- ВКЛАДКА 1: АВТОРЫНОК -->
+        <section id="view-market" class="tab-view active space-y-3.5">
+            <div class="glass p-3.5 rounded-2xl flex flex-col gap-3">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-base font-black text-white flex items-center gap-2">
+                            <i class="fa-solid fa-store text-amber-400"></i> Авторынок
+                        </h1>
+                        <p class="text-[11px] text-slate-400">Ищи живые тачки, проверяй толщиномером и жестко торгуйся</p>
+                    </div>
+                    <button onclick="refreshMarket(true)" class="btn-press bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 shadow">
+                        <i class="fa-solid fa-rotate"></i> <span id="ui-refresh-cost">3 500 ₽</span>
+                    </button>
+                </div>
+                <!-- Фильтр по классам -->
+                <div class="flex gap-1.5 overflow-x-auto pb-1 text-[11px] font-bold" id="market-filters">
+                    <button onclick="setMarketFilter('ALL')" data-filter="ALL" class="filter-btn bg-amber-500 text-slate-950 px-3 py-1.5 rounded-xl whitespace-nowrap font-extrabold">Все классы</button>
+                    <button onclick="setMarketFilter('Бюджет')" data-filter="Бюджет" class="filter-btn bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl whitespace-nowrap">Бюджет (10)</button>
+                    <button onclick="setMarketFilter('Классик')" data-filter="Классик" class="filter-btn bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl whitespace-nowrap">Классик (10)</button>
+                    <button onclick="setMarketFilter('Премиум')" data-filter="Премиум" class="filter-btn bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl whitespace-nowrap">Премиум (10)</button>
+                    <button onclick="setMarketFilter('Спорт')" data-filter="Спорт" class="filter-btn bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl whitespace-nowrap">Спорт (10)</button>
+                    <button onclick="setMarketFilter('Гиперкары')" data-filter="Гиперкары" class="filter-btn bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl whitespace-nowrap">Гиперкары (10)</button>
+                </div>
+            </div>
+
+            <div id="market-cards" class="space-y-3"></div>
+        </section>
+
+        <!-- ВКЛАДКА 2: ГАРАЖ, РЕМОНТ, ТЮНИНГ И ПРОДАЖА -->
+        <section id="view-garage" class="tab-view space-y-3.5">
+            <div class="glass p-3.5 rounded-2xl flex justify-between items-center">
+                <div>
+                    <h1 class="text-base font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-warehouse text-cyan-400"></i> Мой Бокс & Сервис
+                    </h1>
+                    <p class="text-[11px] text-slate-400">После покупки или ремонта действует КД 2 мин на продажу</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-slate-400 uppercase font-bold">Места</span>
+                    <div id="ui-garage-slots" class="text-sm font-black text-cyan-400 mono">0 / 2</div>
+                </div>
+            </div>
+
+            <div id="garage-cards" class="space-y-4"></div>
+        </section>
+
+        <!-- ВКЛАДКА 3: ПЛОЩАДКА ПРОДАЖИ (БЕЗ КОМИССИИ - 0%) -->
+        <section id="view-saleyard" class="tab-view space-y-3.5">
+            <div class="glass-gold p-4 rounded-2xl space-y-2">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-base font-black text-amber-400 flex items-center gap-2">
+                        <i class="fa-solid fa-handshake-simple"></i> Площадка Продаж
+                    </h1>
+                    <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-lg font-bold border border-emerald-500/40">
+                        <i class="fa-solid fa-check-double mr-1"></i>Комиссия рынка: 0%
+                    </span>
+                </div>
+                <p class="text-xs text-slate-300">Комиссия за продажу полностью отменена: 100% денег с каждого проданного авто идут тебе в карман! Назначай цену и веди диалог с покупателями.</p>
+            </div>
+
+            <div id="saleyard-container" class="space-y-3.5"></div>
+        </section>
+
+        <!-- ВКЛАДКА 4: УЛИЧНЫЕ ГОНКИ (CANVAS DRAG) -->
+        <section id="view-races" class="tab-view space-y-3.5">
+            <div class="glass p-4 rounded-2xl space-y-3">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-base font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-flag-checkered text-rose-500"></i> Ночной Дрэг 402м
+                    </h1>
+                    <span class="text-[10px] text-rose-400 bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 rounded font-bold">Риск износа мотора!</span>
+                </div>
+
+                <div>
+                    <label class="text-[11px] text-slate-400 font-bold block mb-1">Выбери автомобиль из гаража:</label>
+                    <select id="race-car-picker" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs font-bold text-white focus:outline-none focus:border-cyan-500"></select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="initDragRace(0)" class="btn-press glass p-3 rounded-xl text-left border border-slate-700 hover:border-cyan-500/50">
+                        <div class="text-[10px] text-cyan-400 font-bold">ЛИГА 1 • БЮДЖЕТ</div>
+                        <div class="text-xs font-black text-white mt-0.5">Ставка: 25 000 ₽</div>
+                        <div class="text-[10px] text-slate-400">Соперники до 130 л.с.</div>
+                    </button>
+                    <button onclick="initDragRace(1)" class="btn-press glass p-3 rounded-xl text-left border border-slate-700 hover:border-amber-500/50">
+                        <div class="text-[10px] text-amber-400 font-bold">ЛИГА 2 • УЛИЦЫ</div>
+                        <div class="text-xs font-black text-white mt-0.5">Ставка: 120 000 ₽</div>
+                        <div class="text-[10px] text-slate-400">Соперники до 300 л.с.</div>
+                    </button>
+                    <button onclick="initDragRace(2)" class="btn-press glass p-3 rounded-xl text-left border border-slate-700 hover:border-purple-500/50">
+                        <div class="text-[10px] text-purple-400 font-bold">ЛИГА 3 • АНДЕГРАУНД</div>
+                        <div class="text-xs font-black text-white mt-0.5">Ставка: 650 000 ₽</div>
+                        <div class="text-[10px] text-slate-400">Соперники до 680 л.с.</div>
+                    </button>
+                    <button onclick="initDragRace(3)" class="btn-press glass p-3 rounded-xl text-left border border-rose-500/40 hover:border-rose-500">
+                        <div class="text-[10px] text-rose-400 font-bold">ЛИГА 4 • БОССЫ</div>
+                        <div class="text-xs font-black text-white mt-0.5">Ставка: 3 500 000 ₽</div>
+                        <div class="text-[10px] text-slate-400">Гиперкары 900+ л.с.</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ГОНОЧНЫЙ ТРЕК CANVAS -->
+            <div id="race-box" class="glass p-3.5 rounded-2xl hidden space-y-3 border border-cyan-500/40">
+                <div class="flex justify-between items-center text-xs">
+                    <span id="race-league-title" class="font-black text-cyan-400 uppercase">Заезд</span>
+                    <span id="race-rival-info" class="text-slate-300 font-bold">Соперник</span>
+                </div>
+                <canvas id="race-canvas" width="380" height="150" class="w-full rounded-xl bg-slate-950 border border-slate-800"></canvas>
+                
+                <!-- ТАХОМЕТР И КПП -->
+                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800 space-y-2">
+                    <div class="flex justify-between text-xs font-bold">
+                        <span>ПЕРЕДАЧА: <b id="race-gear" class="text-amber-400 mono text-sm">N</b></span>
+                        <span>СКОРОСТЬ: <b id="race-speed" class="text-cyan-400 mono text-sm">0</b> км/ч</span>
+                        <span>ОБОРОТЫ: <b id="race-rpm" class="text-white mono">0</b></span>
+                    </div>
+                    <div class="w-full h-5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-700 relative">
+                        <div class="absolute top-0 bottom-0 left-[72%] w-[16%] bg-emerald-500/35 border-x border-emerald-400 z-10"></div>
+                        <div id="race-rpm-bar" class="h-full bg-gradient-to-r from-cyan-500 via-amber-400 to-rose-600 rounded-full w-0 transition-none"></div>
+                    </div>
+                    <div class="text-[10px] text-center text-slate-400">Зеленая зона (6200–7500 RPM) = <b class="text-emerald-400">PERFECT SHIFT</b></div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="btn-race-launch" onclick="launchRace()" class="col-span-3 btn-press bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-lg">
+                        🚦 СТАРТ ЗАЕЗДА!
+                    </button>
+                    <button id="btn-race-shift" onclick="shiftRaceGear()" class="col-span-2 hidden btn-press bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-lg">
+                        ⚡ ПЕРЕКЛЮЧИТЬ (SHIFT)
+                    </button>
+                    <button id="btn-race-nitro" onclick="triggerNitro()" class="col-span-1 hidden btn-press bg-cyan-600 hover:bg-cyan-500 text-white font-black py-3.5 rounded-xl text-xs shadow-lg">
+                        🔥 N2O
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ВКЛАДКА 5: КВЕСТЫ И НАГРАДЫ -->
+        <section id="view-quests" class="tab-view space-y-3.5">
+            <div class="glass-gold p-4 rounded-2xl space-y-3">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-base font-black text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check"></i> Квесты & Задания
+                        </h2>
+                        <p class="text-xs text-slate-300 mt-0.5">Выполняй задания перекупщика и забирай солидные денежные премии и репутацию!</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] uppercase text-slate-400 font-bold block">Выполнено</span>
+                        <span id="quests-total-counter" class="text-sm font-black text-emerald-400 mono">0 / 14</span>
+                    </div>
+                </div>
+
+                <!-- Фильтр категорий квестов -->
+                <div class="flex gap-1.5 overflow-x-auto pb-1 text-[11px] font-bold" id="quest-category-filters">
+                    <button onclick="setQuestFilter('ALL')" data-qfilter="ALL" class="quest-filter-btn bg-amber-500 text-slate-950 px-3 py-1.5 rounded-xl whitespace-nowrap font-extrabold">Все квесты</button>
+                    <button onclick="setQuestFilter('Продажи')" data-qfilter="Продажи" class="quest-filter-btn bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl whitespace-nowrap">Продажи</button>
+                    <button onclick="setQuestFilter('Гонки')" data-qfilter="Гонки" class="quest-filter-btn bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl whitespace-nowrap">Гонки</button>
+                    <button onclick="setQuestFilter('Сервис')" data-qfilter="Сервис" class="quest-filter-btn bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl whitespace-nowrap">Сервис & Тюнинг</button>
+                    <button onclick="setQuestFilter('Синдикат')" data-qfilter="Синдикат" class="quest-filter-btn bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl whitespace-nowrap">Синдикат</button>
+                </div>
+            </div>
+
+            <div id="quests-list" class="space-y-3"></div>
+        </section>
+
+        <!-- ВКЛАДКА 6: СИНДИКАТ, НЕДВИЖИМОСТЬ И КОЛЛЕКЦИЯ -->
+        <section id="view-syndicate" class="tab-view space-y-3.5">
+            <div class="glass p-4 rounded-2xl space-y-3">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Уличная группировка</span>
+                        <h2 id="ui-syndicate-title" class="text-lg font-black text-white">Семья «Волки Улиц»</h2>
+                    </div>
+                    <button onclick="renameSyndicate()" class="btn-press bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 px-3 py-1.5 rounded-xl border border-slate-700 font-bold">
+                        <i class="fa-solid fa-pen mr-1"></i> Сменить имя
+                    </button>
+                </div>
+                <p class="text-xs text-slate-400">Никакого халявного пассивного дохода: деньги делаются только перепродажей и гонками. Прокачивай недвижимость, чтобы открывать больше слотов в гараже и получать максимальные скидки на ремонт!</p>
+                <div class="grid grid-cols-3 gap-2 pt-1 text-center">
+                    <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                        <div class="text-[10px] text-slate-400">Продано авто</div>
+                        <div id="stat-sold" class="text-sm font-black text-white mono mt-0.5">0</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                        <div class="text-[10px] text-slate-400">Побед в дрэге</div>
+                        <div id="stat-wins" class="text-sm font-black text-emerald-400 mono mt-0.5">0</div>
+                    </div>
+                    <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                        <div class="text-[10px] text-slate-400">Коллекция</div>
+                        <div id="stat-collection" class="text-sm font-black text-amber-400 mono mt-0.5">0 / 50</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-4 rounded-2xl space-y-3">
+                <h3 class="text-sm font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-building-shield text-cyan-400"></i> Недвижимость & Базы Синдиката
+                </h3>
+                <div id="realty-cards" class="space-y-2.5"></div>
+            </div>
+
+            <div class="glass p-4 rounded-2xl space-y-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-sm font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-trophy text-amber-400"></i> Энциклопедия (Все 50 Авто)
+                    </h3>
+                    <button onclick="resetAllSave()" class="text-[10px] text-rose-400 underline font-bold">Сброс сохранения</button>
+                </div>
+                <div id="catalog-grid" class="grid grid-cols-2 gap-2 max-h-80 overflow-y-auto pr-1"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- МОДАЛЬНОЕ ОКНО -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden items-center justify-center p-4">
+        <div class="glass w-full max-w-md rounded-3xl p-5 border border-slate-700/80 space-y-4 max-h-[90vh] overflow-y-auto relative">
+            <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center absolute top-4 right-4 z-10 btn-press">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="modal-body" class="space-y-3.5"></div>
+        </div>
+    </div>
+
+    <!-- УВЕДОМЛЕНИЯ (TOASTS) -->
+    <div id="toast-box" class="fixed top-16 left-4 right-4 z-50 flex flex-col items-center gap-2 pointer-events-none"></div>
+
+    <!-- НИЖНЯЯ НАВИГАЦИЯ (6 ВКЛАДОК) -->
+    <nav class="glass fixed bottom-0 left-0 right-0 z-40 border-t border-slate-800/90 px-1 py-2">
+        <div class="max-w-md mx-auto grid grid-cols-6 gap-0.5">
+            <button onclick="openTab('market')" id="tabbtn-market" class="nav-item flex flex-col items-center py-1.5 rounded-xl text-amber-400">
+                <i class="fa-solid fa-store text-base"></i>
+                <span class="text-[9px] font-extrabold mt-1">Рынок</span>
+            </button>
+            <button onclick="openTab('garage')" id="tabbtn-garage" class="nav-item flex flex-col items-center py-1.5 rounded-xl text-slate-400 relative">
+                <i class="fa-solid fa-screwdriver-wrench text-base"></i>
+                <span class="text-[9px] font-extrabold mt-1">Гараж</span>
+                <span id="badge-garage" class="position absolute top-0.5 right-2 bg-cyan-500 text-slate-950 text-[9px] font-black px-1.5 rounded-full">0</span>
+            </button>
+            <button onclick="openTab('saleyard')" id="tabbtn-saleyard" class="nav-item flex flex-col items-center py-1.5 rounded-xl text-slate-400">
+                <i class="fa-solid fa-comments-dollar text-base"></i>
+                <span class="text-[9px] font-extrabold mt-1">Продажа</span>
+            </button>
+            <button onclick="openTab('races')" id="tabbtn-races" class="nav-item flex flex-col items-center py-1.5 rounded-xl text-slate-400">
+                <i class="fa-solid fa-flag-checkered text-base"></i>
+                <span class="text-[9px] font-extrabold mt-1">Дрэг</span>
+            </button>
+            <button onclick="openTab('quests')" id="tabbtn-quests" class="nav-item flex flex-col items-center py-1.5 rounded-xl text-slate-400 relative">
+                <i class="fa-solid fa-list-check text-base"></i>
+                <span class="text-[9px] font-extrabold mt-1">Квесты</span>
+                <span id="badge-quests" class="position absolute top-0.5 right-1.5 bg-amber-400 text-slate-950 text-[9px] font-black px-1.5 rounded-full hidden">0</span>
+            </button>
+            <button onclick="openTab('syndicate')" id="tabbtn-syndicate" class="nav-item flex flex-col items-center py-1.5 rounded-xl text-slate-400">
+                <i class="fa-solid fa-crown text-base"></i>
+                <span class="text-[9px] font-extrabold mt-1">Семья</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        /* =========================================================================
+           1. БАЗА ДАННЫХ: 50 АВТОМОБИЛЕЙ (ПО 10 В КАЖДОМ ИЗ 5 КЛАССОВ)
+           ========================================================================= */
+        const CARS_DB = [
+            // --- КЛАСС 1: БЮДЖЕТ (10 авто) ---
+            { id: "b1", name: "ЗАЗ-968М «Мыльница»", class: "Бюджет", price: 45000, hp: 41, body: "sedan", color: "#38bdf8" },
+            { id: "b2", name: "Москвич-2140 Люкс", class: "Бюджет", price: 65000, hp: 75, body: "sedan", color: "#fb923c" },
+            { id: "b3", name: "ВАЗ-2101 «Копейка»", class: "Бюджет", price: 85000, hp: 64, body: "sedan", color: "#ef4444" },
+            { id: "b4", name: "Ока СеАЗ-11113", class: "Бюджет", price: 95000, hp: 33, body: "hatch", color: "#eab308" },
+            { id: "b5", name: "ВАЗ-2106 «Шаха»", class: "Бюджет", price: 125000, hp: 75, body: "sedan", color: "#fef08a" },
+            { id: "b6", name: "ВАЗ-2107 Инжектор", class: "Бюджет", price: 165000, hp: 74, body: "sedan", color: "#1e3a8a" },
+            { id: "b7", name: "Daewoo Nexia SOHC", class: "Бюджет", price: 195000, hp: 80, body: "sedan", color: "#cbd5e1" },
+            { id: "b8", name: "ВАЗ-21099 «Зубило»", class: "Бюджет", price: 220000, hp: 78, body: "sedan", color: "#334155" },
+            { id: "b9", name: "ВАЗ-2114 «Четырка»", class: "Бюджет", price: 265000, hp: 81, body: "hatch", color: "#0f172a" },
+            { id: "b10", name: "Renault Logan I Фаза-1", class: "Бюджет", price: 310000, hp: 87, body: "sedan", color: "#64748b" },
+
+            // --- КЛАСС 2: КЛАССИК (10 авто) ---
+            { id: "c1", name: "ГАЗ-24 «Волга» Хром", class: "Классик", price: 380000, hp: 95, body: "sedan", color: "#111827" },
+            { id: "c2", name: "VW Passat B3 Универсал", class: "Классик", price: 420000, hp: 115, body: "suv", color: "#7f1d1d" },
+            { id: "c3", name: "Lada Priora Black Edition", class: "Классик", price: 470000, hp: 106, body: "sedan", color: "#090d16" },
+            { id: "c4", name: "Toyota RAV4 1995 (3-Door)", class: "Классик", price: 540000, hp: 129, body: "suv", color: "#10b981" },
+            { id: "c5", name: "Audi 100 C4 «Сигара» 2.8", class: "Классик", price: 610000, hp: 174, body: "sedan", color: "#475569" },
+            { id: "c6", name: "Honda Civic VI Хэтчбек", class: "Классик", price: 680000, hp: 160, body: "hatch", color: "#facc15" },
+            { id: "c7", name: "Mitsubishi Lancer IX 2.0", class: "Классик", price: 760000, hp: 135, body: "sedan", color: "#dc2626" },
+            { id: "c8", name: "Ford Focus II Рестайл", class: "Классик", price: 840000, hp: 145, body: "hatch", color: "#2563eb" },
+            { id: "c9", name: "Lada Vesta Sportline", class: "Классик", price: 1150000, hp: 118, body: "sedan", color: "#f97316" },
+            { id: "c10", name: "Mazda 3 MPS BK Turbo", class: "Классик", price: 1350000, hp: 260, body: "hatch", color: "#991b1b" },
+
+            // --- КЛАСС 3: ПРЕМИУМ (10 авто) ---
+            { id: "p1", name: "BMW 5er E34 540i V8", class: "Премиум", price: 1650000, hp: 286, body: "sedan", color: "#0f172a" },
+            { id: "p2", name: "Mercedes-Benz W140 «Кабан» S500", class: "Премиум", price: 1950000, hp: 320, body: "sedan", color: "#18181b" },
+            { id: "p3", name: "Toyota Mark II JZX100 Tourer V", class: "Премиум", price: 2250000, hp: 280, body: "coupe", color: "#f8fafc" },
+            { id: "p4", name: "Mercedes-Benz W211 E500", class: "Премиум", price: 2550000, hp: 306, body: "sedan", color: "#334155" },
+            { id: "p5", name: "Hyundai Equus 4.6 V8 Royal", class: "Премиум", price: 2850000, hp: 366, body: "sedan", color: "#090a0f" },
+            { id: "p6", name: "BMW X5 E53 4.8is", class: "Премиум", price: 3200000, hp: 360, body: "suv", color: "#1e293b" },
+            { id: "p7", name: "Infiniti FX50S V8", class: "Премиум", price: 3650000, hp: 400, body: "suv", color: "#78350f" },
+            { id: "p8", name: "Toyota Camry 3.5 XV70 GR", class: "Премиум", price: 4200000, hp: 301, body: "sedan", color: "#111827" },
+            { id: "p9", name: "Lexus LX570 Supercharger", class: "Премиум", price: 6800000, hp: 450, body: "suv", color: "#f1f5f9" },
+            { id: "p10", name: "Toyota Land Cruiser 300 GR", class: "Премиум", price: 11500000, hp: 415, body: "suv", color: "#020617" },
+
+            // --- КЛАСС 4: СПОРТ (10 авто) ---
+            { id: "s1", name: "Subaru Impreza WRX STI", class: "Спорт", price: 3900000, hp: 305, body: "sedan", color: "#1d4ed8" },
+            { id: "s2", name: "Mitsubishi Lancer Evolution IX", class: "Спорт", price: 4600000, hp: 280, body: "sedan", color: "#ef4444" },
+            { id: "s3", name: "Toyota Supra A80 2JZ-GTE", class: "Спорт", price: 7800000, hp: 330, body: "coupe", color: "#f97316" },
+            { id: "s4", name: "Dodge Charger SRT Hellcat", class: "Спорт", price: 9500000, hp: 717, body: "coupe", color: "#7f1d1d" },
+            { id: "s5", name: "BMW M3 G80 Competition", class: "Спорт", price: 12800000, hp: 510, body: "sedan", color: "#16a34a" },
+            { id: "s6", name: "Nissan GT-R R35 Nismo", class: "Спорт", price: 15500000, hp: 600, body: "coupe", color: "#e2e8f0" },
+            { id: "s7", name: "BMW M5 F90 CS", class: "Спорт", price: 18500000, hp: 635, body: "sedan", color: "#064e3b" },
+            { id: "s8", name: "Mercedes-AMG E63S Brabus 800", class: "Спорт", price: 22000000, hp: 800, body: "sedan", color: "#090a0f" },
+            { id: "s9", name: "Audi RS6 Avant C8 Performance", class: "Спорт", price: 25500000, hp: 630, body: "suv", color: "#312e81" },
+            { id: "s10", name: "Porsche 911 Turbo S (992)", class: "Спорт", price: 32000000, hp: 650, body: "hyper", color: "#eab308" },
+
+            // --- КЛАСС 5: ГИПЕРКАРЫ И ЭЛИТА (10 авто) ---
+            { id: "h1", name: "Mercedes-AMG G63 Mansory", class: "Гиперкары", price: 42000000, hp: 850, body: "suv", color: "#090d16" },
+            { id: "h2", name: "Lamborghini Urus Performante", class: "Гиперкары", price: 48000000, hp: 666, body: "suv", color: "#facc15" },
+            { id: "h3", name: "Ferrari SF90 Stradale", class: "Гиперкары", price: 68000000, hp: 1000, body: "hyper", color: "#dc2626" },
+            { id: "h4", name: "Rolls-Royce Cullinan Black Badge", class: "Гиперкары", price: 85000000, hp: 600, body: "suv", color: "#1e1b4b" },
+            { id: "h5", name: "Lamborghini Revuelto V12", class: "Гиперкары", price: 115000000, hp: 1015, body: "hyper", color: "#f97316" },
+            { id: "h6", name: "Porsche 918 Spyder Weissach", class: "Гиперкары", price: 155000000, hp: 887, body: "hyper", color: "#cbd5e1" },
+            { id: "h7", name: "McLaren P1 GTR", class: "Гиперкары", price: 195000000, hp: 1000, body: "hyper", color: "#f59e0b" },
+            { id: "h8", name: "Pagani Huayra Roadster BC", class: "Гиперкары", price: 280000000, hp: 802, body: "hyper", color: "#38bdf8" },
+            { id: "h9", name: "Koenigsegg Jesko Absolut", class: "Гиперкары", price: 360000000, hp: 1600, body: "hyper", color: "#a3e635" },
+            { id: "h10", name: "Bugatti Chiron Super Sport 300+", class: "Гиперкары", price: 500000000, hp: 1600, body: "hyper", color: "#0284c7" }
+        ];
+
+        // 1. КОМИССИЯ УБРАНА: feeRate = 0 ДЛЯ ВСЕХ УРОВНЕЙ
+        const REALTY_DB = [
+            { level: 0, name: "Арендованный сырой гараж", price: 0, slots: 2, repairDisc: 0, feeRate: 0, desc: "Стандартный бокс на 2 места. Комиссия рынка 0% (убрана)." },
+            { level: 1, name: "Двойной бокс с подъемником", price: 850000, slots: 4, repairDisc: 0.10, feeRate: 0, desc: "4 места, скидка на запчасти 10%. Без комиссии (0%)." },
+            { level: 2, name: "Частный Автосервис на районе", price: 4500000, slots: 7, repairDisc: 0.20, feeRate: 0, desc: "7 мест, скидка на ремонт 20%. Без комиссии (0%)." },
+            { level: 3, name: "Загородный Особняк с паркингом", price: 25000000, slots: 11, repairDisc: 0.30, feeRate: 0, desc: "11 мест, скидка на ремонт 30%. Без комиссии (0%)." },
+            { level: 4, name: "Премиум Автосалон Синдиката", price: 140000000, slots: 18, repairDisc: 0.45, feeRate: 0, desc: "18 мест, скидка на ремонт 45%. Без комиссии (0%)." }
+        ];
+
+        const TUNING_CATALOG = [
+            { key: "tint", name: "Тонировка Lumar «Бункер»", hpBonus: 0, priceMult: 0.03, icon: "fa-eye-slash" },
+            { key: "wheels", name: "Кованые диски R20 Vossen", hpBonus: 5, priceMult: 0.05, icon: "fa-compact-disc" },
+            { key: "airride", name: "Пневмоподвеска AirLift", hpBonus: 0, priceMult: 0.06, icon: "fa-arrows-up-down" },
+            { key: "exhaust", name: "Титановый выхлоп Akrapovic", hpBonus: 18, priceMult: 0.05, icon: "fa-fire" },
+            { key: "stage1", name: "Чип-тюнинг ЭБУ Stage 1", hpBonus: 35, priceMult: 0.06, icon: "fa-microchip" },
+            { key: "stage2", name: "Гибридная турбина Stage 2+", hpBonus: 85, priceMult: 0.11, icon: "fa-bolt" }
+        ];
+
+        const SELLER_NAMES = ["Аслан", "Дядя Валера", "Тимур Перекуп", "Рустам", "Серега ГСК", "Магомед", "Артурчик", "Дед Михалыч", "Карен", "Давид"];
+        const BUYER_PROFILES = [
+            { name: "Дотошный подборщик Илья", type: "expert", maxOverpay: 1.02, patience: 2, avatar: "🕵️‍♂️" },
+            { name: "Наглый перекуп Жора", type: "lowballer", maxOverpay: 0.90, patience: 3, avatar: "🦈" },
+            { name: "Обычный водитель Андрей", type: "normal", maxOverpay: 1.08, patience: 2, avatar: "👨‍💼" },
+            { name: "Молодой пацан с района", type: "hothead", maxOverpay: 1.15, patience: 2, avatar: "🧢" },
+            { name: "Ценитель живых экземпляров", type: "collector", maxOverpay: 1.22, patience: 2, avatar: "🎩" }
+        ];
+
+        /* =========================================================================
+           2. СИСТЕМА КВЕСТОВ И ЕЖЕДНЕВНОГО БОНУСА
+           ========================================================================= */
+        const DAILY_BONUS_TIERS = [
+            { day: 1, money: 50000, rep: 1, title: "Стартовый подгон", desc: "Чемоданчик с кэшем на первую сделку" },
+            { day: 2, money: 75000, rep: 1, title: "Братский грев", desc: "Поддержка от уличных пацанов" },
+            { day: 3, money: 110000, rep: 2, title: "Запчасти из Польши", desc: "Выгодная партия деталей" },
+            { day: 4, money: 160000, rep: 2, title: "Куш перекупа", desc: "Удачный перехват объявления" },
+            { day: 5, money: 220000, rep: 3, title: "Золотой статус", desc: "Уважение старших в синдикате" },
+            { day: 6, money: 320000, rep: 4, title: "Авторитет района", desc: "Личная доля с автомойки и СТО" },
+            { day: 7, money: 500000, rep: 5, title: "Синдикат PRO", desc: "ДЖЕКПОТ 7-ГО ДНЯ: Полмиллиона ₽!" }
+        ];
+
+        const QUESTS_DB = [
+            {
+                id: "q_buy_1",
+                category: "Сервис",
+                title: "Первая ласточка",
+                desc: "Купи свой первый автомобиль на авторынке",
+                target: 1,
+                rewardMoney: 35000,
+                rewardRep: 1,
+                icon: "fa-cart-shopping",
+                color: "text-cyan-400",
+                getVal: (s) => s.stats.bought || 0
+            },
+            {
+                id: "q_inspect_1",
+                category: "Сервис",
+                title: "Точный глаз",
+                desc: "Проведи полную диагностику OBD с толщиномером на рынке",
+                target: 1,
+                rewardMoney: 25000,
+                rewardRep: 1,
+                icon: "fa-laptop-medical",
+                color: "text-blue-400",
+                getVal: (s) => s.stats.inspections || 0
+            },
+            {
+                id: "q_sell_1",
+                category: "Продажи",
+                title: "Первая сделка",
+                desc: "Успешно продай 1 автомобиль покупателю на площадке",
+                target: 1,
+                rewardMoney: 50000,
+                rewardRep: 2,
+                icon: "fa-handshake",
+                color: "text-emerald-400",
+                getVal: (s) => s.stats.sold || 0
+            },
+            {
+                id: "q_tune_1",
+                category: "Сервис",
+                title: "Уличный стиль",
+                desc: "Установи любую деталь тюнинга в гараже",
+                target: 1,
+                rewardMoney: 35000,
+                rewardRep: 1,
+                icon: "fa-bolt",
+                color: "text-amber-400",
+                getVal: (s) => s.stats.tunings || 0
+            },
+            {
+                id: "q_repair_3",
+                category: "Сервис",
+                title: "Золотые руки",
+                desc: "Отремонтируй 3 узла автомобилей в ремзоне",
+                target: 3,
+                rewardMoney: 45000,
+                rewardRep: 2,
+                icon: "fa-wrench",
+                color: "text-orange-400",
+                getVal: (s) => s.stats.repairs || 0
+            },
+            {
+                id: "q_sell_5",
+                category: "Продажи",
+                title: "Опытный перекуп",
+                desc: "Продай 5 автомобилей клиентам (Квест от гильдии)",
+                target: 5,
+                rewardMoney: 100000, // 100 ТЫСЯЧ ЗА 5 АВТО
+                rewardRep: 5,
+                icon: "fa-truck-fast",
+                color: "text-emerald-400",
+                getVal: (s) => s.stats.sold || 0
+            },
+            {
+                id: "q_race_1",
+                category: "Гонки",
+                title: "Ночной хулиган",
+                desc: "Одержи 1 победу в заезде на 402 метра",
+                target: 1,
+                rewardMoney: 40000,
+                rewardRep: 2,
+                icon: "fa-flag-checkered",
+                color: "text-rose-400",
+                getVal: (s) => s.stats.wins || 0
+            },
+            {
+                id: "q_race_5",
+                category: "Гонки",
+                title: "Гроза стритрейсеров",
+                desc: "Одержи 5 побед в дрэг-рейсинге",
+                target: 5,
+                rewardMoney: 150000,
+                rewardRep: 4,
+                icon: "fa-trophy",
+                color: "text-rose-400",
+                getVal: (s) => s.stats.wins || 0
+            },
+            {
+                id: "q_collect_5",
+                category: "Синдикат",
+                title: "Автоколлекционер",
+                desc: "Собери в коллекции 5 различных моделей авто",
+                target: 5,
+                rewardMoney: 120000,
+                rewardRep: 4,
+                icon: "fa-book-bookmark",
+                color: "text-purple-400",
+                getVal: (s) => (s.collection ? s.collection.length : 0)
+            },
+            {
+                id: "q_profit_300k",
+                category: "Продажи",
+                title: "Крупный навар",
+                desc: "Заработай суммарно 300 000 ₽ чистой прибыли с перепродажи",
+                target: 300000,
+                rewardMoney: 150000,
+                rewardRep: 4,
+                icon: "fa-sack-dollar",
+                color: "text-yellow-400",
+                getVal: (s) => Math.max(0, s.stats.profit || 0)
+            },
+            {
+                id: "q_realty_1",
+                category: "Синдикат",
+                title: "Свой автосервис",
+                desc: "Купи недвижимость 1 уровня (Двойной бокс с подъемником)",
+                target: 1,
+                rewardMoney: 200000,
+                rewardRep: 5,
+                icon: "fa-building",
+                color: "text-cyan-400",
+                getVal: (s) => s.realtyLevel || 0
+            },
+            {
+                id: "q_sell_10",
+                category: "Продажи",
+                title: "Магнат авторынка",
+                desc: "Продай 10 автомобилей клиентам на площадке",
+                target: 10,
+                rewardMoney: 250000,
+                rewardRep: 7,
+                icon: "fa-money-bill-trend-up",
+                color: "text-emerald-400",
+                getVal: (s) => s.stats.sold || 0
+            },
+            {
+                id: "q_race_10",
+                category: "Гонки",
+                title: "Непобедимый на квотере",
+                desc: "Одержи 10 побед в уличных заездах",
+                target: 10,
+                rewardMoney: 350000,
+                rewardRep: 8,
+                icon: "fa-fire",
+                color: "text-rose-400",
+                getVal: (s) => s.stats.wins || 0
+            },
+            {
+                id: "q_sell_20",
+                category: "Продажи",
+                title: "Легенда перекупа",
+                desc: "Продай 20 автомобилей и завоюй рынок целиком",
+                target: 20,
+                rewardMoney: 500000,
+                rewardRep: 12,
+                icon: "fa-crown",
+                color: "text-amber-400",
+                getVal: (s) => s.stats.sold || 0
+            }
+        ];
+
+        /* =========================================================================
+           3. СОСТОЯНИЕ ИГРЫ
+           ========================================================================= */
+        let state = {
+            name: "Перекуп",
+            syndicate: "Волки Улиц",
+            money: 180000,
+            rep: 1,
+            realtyLevel: 0,
+            marketFilter: "ALL",
+            questFilter: "ALL",
+            market: [],
+            garage: [],
+            collection: [],
+            stats: { sold: 0, wins: 0, profit: 0, bought: 0, inspections: 0, tunings: 0, repairs: 0 },
+            claimedQuests: [],
+            dailyBonus: { streak: 0, lastClaimTime: 0 },
+            activeSale: null,
+            soundEnabled: true
+        };
+
+        const SAVE_KEY = "street_syndicate_pro_v6";
+
+        function saveState() {
+            try {
+                localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+            } catch (e) {}
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(SAVE_KEY) || localStorage.getItem("street_syndicate_pro_v5");
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    state = Object.assign(state, parsed);
+                    // Гарантируем структуру полей
+                    state.stats = state.stats || { sold: 0, wins: 0, profit: 0, bought: 0, inspections: 0, tunings: 0, repairs: 0 };
+                    state.stats.bought = state.stats.bought || state.stats.sold || 0;
+                    state.stats.inspections = state.stats.inspections || 0;
+                    state.stats.tunings = state.stats.tunings || 0;
+                    state.stats.repairs = state.stats.repairs || 0;
+                    state.claimedQuests = state.claimedQuests || [];
+                    state.dailyBonus = state.dailyBonus || { streak: 0, lastClaimTime: 0 };
+                    if (state.soundEnabled === undefined) state.soundEnabled = true;
+                }
+            } catch (e) {}
+
+            if (!state.market || state.market.length === 0) {
+                generateMarketListings();
+            }
+        }
+
+        function resetAllSave() {
+            openModal(`
+                <h3 class="text-base font-black text-rose-400 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Сброс прогресса
+                </h3>
+                <p class="text-xs text-slate-300">Вы действительно хотите сбросить сохранение? Все автомобили, деньги, репутация и квесты будут сброшены до начальных 180 000 ₽.</p>
+                <div class="grid grid-cols-2 gap-2 pt-2">
+                    <button onclick="closeModal()" class="btn-press bg-slate-800 text-slate-300 font-bold py-2.5 rounded-xl text-xs">Отмена</button>
+                    <button onclick="confirmResetAllSave()" class="btn-press bg-rose-600 hover:bg-rose-500 text-white font-black py-2.5 rounded-xl text-xs">Сбросить все</button>
+                </div>
+            `);
+        }
+
+        function confirmResetAllSave() {
+            try {
+                localStorage.removeItem(SAVE_KEY);
+                localStorage.removeItem("street_syndicate_pro_v5");
+            } catch(e) {}
+            location.reload();
+        }
+
+        function fmt(num) {
+            return Math.round(num).toLocaleString("ru-RU");
+        }
+
+        /* =========================================================================
+           4. ЗВУКОВОЙ ДВИЖОК (WEB AUDIO API)
+           ========================================================================= */
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtxClass) audioCtx = new AudioCtxClass();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            if (!state.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+
+                if (type === 'coin') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(987.77, now); // B5
+                    osc.frequency.exponentialRampToValueAtTime(1318.51, now + 0.12); // E6
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'win') {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.08);
+                        gain.gain.setValueAtTime(0.18, now + i * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.3);
+                        osc.start(now + i * 0.08);
+                        osc.stop(now + i * 0.08 + 0.35);
+                    });
+                } else if (type === 'click') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+                } else if (type === 'shift') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(320, now);
+                    osc.frequency.exponentialRampToValueAtTime(540, now + 0.1);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                }
+            } catch (e) {}
+        }
+
+        function toggleAudioMute() {
+            state.soundEnabled = !state.soundEnabled;
+            saveState();
+            const icon = document.getElementById("sound-icon");
+            if (icon) {
+                icon.className = state.soundEnabled ? "fa-solid fa-volume-high text-cyan-400" : "fa-solid fa-volume-xmark text-slate-500";
+            }
+            toast(state.soundEnabled ? "Звуки включены" : "Звуки выключены", "info");
+        }
+
+        /* =========================================================================
+           5. SVG-ГЕНЕРАТОР АВТОМОБИЛЕЙ
+           ========================================================================= */
+        function renderCarSVG(car) {
+            const c = car.color || "#3b82f6";
+            const isTinted = car.tuning && car.tuning.tint;
+            const isLow = car.tuning && car.tuning.airride;
+            const hasWheels = car.tuning && car.tuning.wheels;
+            const hasStage2 = car.tuning && car.tuning.stage2;
+            const glassColor = isTinted ? "#05070b" : "#64748b";
+            const yOffset = isLow ? 5 : 0;
+            const rimColor = hasWheels ? "#f59e0b" : "#94a3b8";
+
+            let bodyPath = "";
+            let roofPath = "";
+            if (car.body === "suv") {
+                bodyPath = `M25,${62+yOffset} L35,${38+yOffset} L125,${36+yOffset} L155,${36+yOffset} L172,${55+yOffset} L195,${58+yOffset} L198,${76+yOffset} L20,${76+yOffset} Z`;
+                roofPath = `M42,${41+yOffset} L148,${40+yOffset} L164,${55+yOffset} L36,${55+yOffset} Z`;
+            } else if (car.body === "hyper") {
+                bodyPath = `M18,${68+yOffset} L52,${47+yOffset} L122,${45+yOffset} L168,${54+yOffset} L202,${62+yOffset} L200,${76+yOffset} L16,${76+yOffset} Z`;
+                roofPath = `M60,${49+yOffset} L118,${48+yOffset} L145,${56+yOffset} L48,${57+yOffset} Z`;
+            } else if (car.body === "hatch") {
+                bodyPath = `M26,${64+yOffset} L44,${42+yOffset} L126,${41+yOffset} L154,${54+yOffset} L192,${58+yOffset} L194,${76+yOffset} L22,${76+yOffset} Z`;
+                roofPath = `M50,${44+yOffset} L122,${44+yOffset} L145,${54+yOffset} L40,${55+yOffset} Z`;
+            } else {
+                bodyPath = `M20,${62+yOffset} L48,${54+yOffset} L68,${40+yOffset} L134,${40+yOffset} L158,${54+yOffset} L196,${58+yOffset} L198,${76+yOffset} L18,${76+yOffset} Z`;
+                roofPath = `M72,${43+yOffset} L130,${43+yOffset} L150,${54+yOffset} L55,${54+yOffset} Z`;
+            }
+
+            return `
+            <svg viewBox="0 0 220 95" class="w-full h-24 overflow-visible">
+                <ellipse cx="110" cy="82" rx="86" ry="6" fill="${hasStage2 ? 'rgba(6,182,212,0.45)' : 'rgba(0,0,0,0.65)'}" />
+                <path d="${bodyPath}" fill="${c}" stroke="#ffffff22" stroke-width="1.2"/>
+                <path d="${roofPath}" fill="${glassColor}" stroke="#ffffff33" stroke-width="1"/>
+                <polygon points="190,${60+yOffset} 198,${61+yOffset} 197,${66+yOffset} 188,${66+yOffset}" fill="#fef08a"/>
+                <polygon points="20,${63+yOffset} 26,${63+yOffset} 25,${68+yOffset} 19,${68+yOffset}" fill="#ef4444"/>
+                <g>
+                    <circle cx="58" cy="76" r="14" fill="#090d16" stroke="#1e293b" stroke-width="3"/>
+                    <circle cx="58" cy="76" r="8" fill="none" stroke="${rimColor}" stroke-width="2.2" stroke-dasharray="4 2"/>
+                    <circle cx="58" cy="76" r="3" fill="${rimColor}"/>
+                </g>
+                <g>
+                    <circle cx="162" cy="76" r="14" fill="#090d16" stroke="#1e293b" stroke-width="3"/>
+                    <circle cx="162" cy="76" r="8" fill="none" stroke="${rimColor}" stroke-width="2.2" stroke-dasharray="4 2"/>
+                    <circle cx="162" cy="76" r="3" fill="${rimColor}"/>
+                </g>
+            </svg>`;
+        }
+
+        /* =========================================================================
+           6. АВТОРЫНОК
+           ========================================================================= */
+        function getAvailableModelsForPlayer() {
+            if (state.marketFilter !== "ALL") {
+                return CARS_DB.filter(c => c.class === state.marketFilter);
+            }
+            return CARS_DB;
+        }
+
+        function generateMarketListings() {
+            state.market = [];
+            const pool = getAvailableModelsForPlayer();
+            for (let i = 0; i < 8; i++) {
+                let base;
+                if (state.marketFilter === "ALL" && i < 4) {
+                    const affordable = CARS_DB.filter(c => c.price <= Math.max(350000, state.money * 2.5));
+                    base = affordable[Math.floor(Math.random() * affordable.length)] || pool[0];
+                } else {
+                    base = pool[Math.floor(Math.random() * pool.length)];
+                }
+
+                const engine = Math.floor(32 + Math.random() * 64);
+                const gearbox = Math.floor(35 + Math.random() * 62);
+                const susp = Math.floor(30 + Math.random() * 66);
+                const bodyCond = Math.floor(40 + Math.random() * 56);
+                const avgCond = (engine + gearbox + susp + bodyCond) / 400;
+
+                const sellerGreed = 0.92 + Math.random() * 0.28;
+                const askPrice = Math.round(base.price * (0.55 + avgCond * 0.50) * sellerGreed);
+                const minAcceptPrice = Math.round(askPrice * (0.84 + Math.random() * 0.10));
+
+                const realMileage = Math.floor(45000 + Math.random() * 280000);
+                const isRolledBack = Math.random() < 0.45;
+                const shownMileage = isRolledBack ? Math.floor(realMileage * 0.45) : realMileage;
+
+                state.market.push({
+                    uid: "m_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+                    modelId: base.id,
+                    name: base.name,
+                    class: base.class,
+                    basePrice: base.price,
+                    hp: base.hp,
+                    body: base.body,
+                    color: base.color,
+                    askPrice: askPrice,
+                    minPrice: minAcceptPrice,
+                    seller: SELLER_NAMES[Math.floor(Math.random() * SELLER_NAMES.length)],
+                    patience: 2,
+                    shownMileage: shownMileage,
+                    realMileage: realMileage,
+                    isRolledBack: isRolledBack,
+                    parts: { engine, gearbox, susp, body: bodyCond },
+                    inspectedVisually: false,
+                    inspectedDeep: false
+                });
+            }
+            saveState();
+        }
+
+        function setMarketFilter(flt) {
+            state.marketFilter = flt;
+            document.querySelectorAll(".filter-btn").forEach(btn => {
+                if (btn.dataset.filter === flt) {
+                    btn.className = "filter-btn bg-amber-500 text-slate-950 px-3 py-1.5 rounded-xl whitespace-nowrap font-extrabold";
+                } else {
+                    btn.className = "filter-btn bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl whitespace-nowrap font-bold";
+                }
+            });
+            generateMarketListings();
+            renderMarketView();
+        }
+
+        function refreshMarket(paid) {
+            const refreshCost = Math.max(3500, Math.round(state.money * 0.015));
+            if (paid) {
+                if (state.money < refreshCost) {
+                    toast(`Не хватает денег на обновление авторынка (${fmt(refreshCost)} ₽)!`, "error");
+                    return;
+                }
+                state.money -= refreshCost;
+                playSound('click');
+                toast(`Рынок обновлен (-${fmt(refreshCost)} ₽)`, "info");
+            }
+            generateMarketListings();
+            updateTopBar();
+            renderMarketView();
+        }
+
+        function renderMarketView() {
+            const refreshCost = Math.max(3500, Math.round(state.money * 0.015));
+            document.getElementById("ui-refresh-cost").innerText = fmt(refreshCost) + " ₽";
+            const box = document.getElementById("market-cards");
+
+            if (state.market.length === 0) {
+                box.innerHTML = `<div class="glass p-8 rounded-2xl text-center text-xs text-slate-400">Все объявления разобрали! Нажми кнопку обновления рынка сверху.</div>`;
+                return;
+            }
+
+            box.innerHTML = state.market.map(car => {
+                return `
+                <div class="glass rounded-2xl overflow-hidden border border-slate-800">
+                    <div class="car-stage px-4 pt-2 relative">
+                        <div class="flex justify-between items-center text-[10px] font-bold">
+                            <span class="bg-slate-900/90 text-amber-400 px-2 py-0.5 rounded border border-amber-500/30">${car.class}</span>
+                            <span class="text-slate-400"><i class="fa-solid fa-user mr-1"></i>Продавец: <b class="text-white">${car.seller}</b> (Терпение: ${car.patience})</span>
+                        </div>
+                        ${renderCarSVG(car)}
+                    </div>
+                    <div class="p-3.5 space-y-2.5">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-sm font-black text-white">${car.name}</h3>
+                                <div class="text-[11px] text-slate-400">Мощность: <b class="text-cyan-400">${car.hp} л.с.</b> • Пробег: <b class="text-white">${fmt(car.shownMileage)} км</b></div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[10px] text-slate-400 uppercase font-bold">Цена продавца</div>
+                                <div class="text-sm font-black text-emerald-400 mono">${fmt(car.askPrice)} ₽</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-1.5 text-[10px] bg-slate-900/90 p-2 rounded-xl border border-slate-800 text-center">
+                            <div>
+                                <div class="text-slate-400">Кузов</div>
+                                <div class="font-black ${car.inspectedVisually || car.inspectedDeep ? 'text-white' : 'text-slate-500'}">${car.inspectedVisually || car.inspectedDeep ? car.parts.body + '%' : '???'}</div>
+                            </div>
+                            <div>
+                                <div class="text-slate-400">Мотор</div>
+                                <div class="font-black ${car.inspectedDeep ? (car.parts.engine < 50 ? 'text-rose-400' : 'text-emerald-400') : 'text-slate-500'}">${car.inspectedDeep ? car.parts.engine + '%' : '???'}</div>
+                            </div>
+                            <div>
+                                <div class="text-slate-400">КПП</div>
+                                <div class="font-black ${car.inspectedDeep ? 'text-white' : 'text-slate-500'}">${car.inspectedDeep ? car.parts.gearbox + '%' : '???'}</div>
+                            </div>
+                            <div>
+                                <div class="text-slate-400">Ходовка</div>
+                                <div class="font-black ${car.inspectedDeep ? 'text-white' : 'text-slate-500'}">${car.inspectedDeep ? car.parts.susp + '%' : '???'}</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 pt-1">
+                            <button onclick="openInspectDialog('${car.uid}')" class="btn-press bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 rounded-xl text-xs font-bold border border-slate-700">
+                                <i class="fa-solid fa-magnifying-glass text-cyan-400 mr-1"></i> Осмотр
+                            </button>
+                            <button onclick="openHaggleDialog('${car.uid}')" class="btn-press bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 py-2.5 rounded-xl text-xs font-bold border border-amber-500/30">
+                                <i class="fa-solid fa-comments-dollar mr-1"></i> Торг
+                            </button>
+                            <button onclick="purchaseMarketCar('${car.uid}')" class="btn-press bg-emerald-500 hover:bg-emerald-400 text-slate-950 py-2.5 rounded-xl text-xs font-black shadow-lg">
+                                Купить
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join("");
+        }
+
+        function openInspectDialog(uid) {
+            const car = state.market.find(c => c.uid === uid);
+            if (!car) return;
+            const obdCost = Math.max(4000, Math.round(car.basePrice * 0.015));
+
+            openModal(`
+                <h3 class="text-base font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-microscope text-cyan-400"></i> Диагностика: ${car.name}
+                </h3>
+                <p class="text-xs text-slate-400">Без проверки ты рискуешь купить стучащий мотор втридорога, а продавец не уступит в торге без аргументов.</p>
+
+                <div class="space-y-2">
+                    <button onclick="runVisualInspect('${car.uid}')" class="w-full btn-press bg-slate-800 hover:bg-slate-700 p-3 rounded-xl flex justify-between items-center text-xs border border-slate-700">
+                        <span class="font-bold text-white"><i class="fa-solid fa-eye text-amber-400 mr-2"></i>Визуальный осмотр кузова и зазоров</span>
+                        <span class="text-emerald-400 font-black">Бесплатно</span>
+                    </button>
+                    <button onclick="runDeepOBDInspect('${car.uid}', ${obdCost})" class="w-full btn-press bg-cyan-500/15 hover:bg-cyan-500/25 p-3 rounded-xl flex justify-between items-center text-xs border border-cyan-500/40">
+                        <span class="font-bold text-cyan-300"><i class="fa-solid fa-laptop-medical mr-2"></i>Толщиномер + Эндоскоп + OBD-сканер</span>
+                        <span class="text-amber-400 font-black mono">${fmt(obdCost)} ₽</span>
+                    </button>
+                </div>
+
+                ${car.inspectedDeep ? `
+                    <div class="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 space-y-1.5 text-xs">
+                        <div class="font-black text-cyan-400 mb-1">Полный отчет автоподборщика:</div>
+                        <div>• Кузов и ЛКП: <b class="text-white">${car.parts.body}%</b> ${car.parts.body < 65 ? '<span class="text-rose-400">(Шпаклевка на стойках!)</span>' : '<span class="text-emerald-400">(Заводской окрас)</span>'}</div>
+                        <div>• Компрессия ДВС: <b class="text-white">${car.parts.engine}%</b> ${car.parts.engine < 55 ? '<span class="text-rose-400">(Задиры в цилиндрах!)</span>' : '<span class="text-emerald-400">(Мотор шепчет)</span>'}</div>
+                        <div>• Коробка передач: <b class="text-white">${car.parts.gearbox}%</b></div>
+                        <div>• Ходовая часть: <b class="text-white">${car.parts.susp}%</b></div>
+                        <div>• База пробега: <b class="${car.isRolledBack ? 'text-rose-400' : 'text-emerald-400'}">${car.isRolledBack ? 'СКРУЧЕН! Реальный: ' + fmt(car.realMileage) + ' км' : 'Родной подтвержден'}</b></div>
+                    </div>
+                ` : (car.inspectedVisually ? `
+                    <div class="bg-slate-900 p-3 rounded-2xl border border-slate-800 text-xs">
+                        Визуальный осмотр кузова: <b class="text-white">${car.parts.body}%</b>. Для проверки ДВС, КПП и реального пробега запусти полную OBD-диагностику.
+                    </div>
+                ` : '')}
+            `);
+        }
+
+        function runVisualInspect(uid) {
+            const car = state.market.find(c => c.uid === uid);
+            if (!car) return;
+            car.inspectedVisually = true;
+            saveState();
+            renderMarketView();
+            openInspectDialog(uid);
+            toast("Кузов осмотрен!", "info");
+        }
+
+        function runDeepOBDInspect(uid, cost) {
+            const car = state.market.find(c => c.uid === uid);
+            if (!car) return;
+            if (car.inspectedDeep) {
+                toast("Машина уже полностью проверена!", "info");
+                return;
+            }
+            if (state.money < cost) {
+                toast("Не хватает денег на платную диагностику!", "error");
+                return;
+            }
+            state.money -= cost;
+            state.stats.inspections = (state.stats.inspections || 0) + 1;
+            car.inspectedVisually = true;
+            car.inspectedDeep = true;
+            playSound('click');
+            updateTopBar();
+            saveState();
+            renderMarketView();
+            openInspectDialog(uid);
+            toast("Полный отчет OBD готов!", "success");
+        }
+
+        function openHaggleDialog(uid) {
+            const car = state.market.find(c => c.uid === uid);
+            if (!car) return;
+            if (car.patience <= 0) {
+                toast("Продавец больше не желает торговаться! Бери по текущей цене или уходи.", "error");
+                return;
+            }
+
+            const suggestedOffer = Math.round(car.askPrice * 0.92);
+
+            openModal(`
+                <h3 class="text-base font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-handshake-angle text-amber-400"></i> Переговоры с продавцом (${car.seller})
+                </h3>
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 text-xs space-y-1">
+                    <div>Текущая цена: <b class="text-emerald-400 mono">${fmt(car.askPrice)} ₽</b></div>
+                    <div>Терпение продавца: <b class="text-amber-400">${car.patience} ед.</b> (При 0 продавец снимет авто с продажи!)</div>
+                </div>
+
+                <div class="space-y-2">
+                    <button onclick="executeSellerHaggle('${car.uid}', 'soft')" class="w-full btn-press bg-slate-800 hover:bg-slate-700 text-left p-3 rounded-xl border border-slate-700 text-xs">
+                        <div class="font-bold text-white">🤝 Вежливый торг у капота (-3% .. -6%)</div>
+                        <div class="text-[10px] text-slate-400">«Брат, на оформление и бензин уступи немного, заберу сейчас»</div>
+                    </button>
+
+                    <button onclick="executeSellerHaggle('${car.uid}', 'facts')" class="w-full btn-press bg-slate-800 hover:bg-slate-700 text-left p-3 rounded-xl border border-cyan-500/30 text-xs">
+                        <div class="font-bold text-cyan-300">🔍 Давить фактами диагностики (-7% .. -14%)</div>
+                        <div class="text-[10px] text-slate-400">${car.inspectedDeep ? 'Тыкнуть продавца в отчет OBD, скрученный пробег и ошибки' : 'ВНИМАНИЕ: Вы не делали OBD! Продавец раскусит блеф!'}</div>
+                    </button>
+
+                    <div class="pt-2 border-t border-slate-800 space-y-2">
+                        <label class="text-[11px] text-slate-400 font-bold block">Или назови свою цену наличными (риск гнева):</label>
+                        <div class="flex gap-2">
+                            <input id="custom-haggle-input" type="number" value="${suggestedOffer}" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-white mono">
+                            <button onclick="executeSellerHaggle('${car.uid}', 'custom')" class="btn-press bg-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs">Предложить</button>
+                        </div>
+                    </div>
+                </div>
+            `);
+        }
+
+        function executeSellerHaggle(uid, mode) {
+            const car = state.market.find(c => c.uid === uid);
+            if (!car || car.patience <= 0) return;
+
+            car.patience -= 1;
+            const repBonus = Math.min(0.04, state.rep * 0.002);
+
+            if (mode === "soft") {
+                if (Math.random() < 0.72 + repBonus) {
+                    const drop = Math.round(car.askPrice * (0.03 + Math.random() * 0.03));
+                    car.askPrice = Math.max(car.minPrice, car.askPrice - drop);
+                    toast(`${car.seller}: «Ладно, по рукам, скину ${fmt(drop)} ₽»`, "success");
+                } else {
+                    toast(`${car.seller}: «Цена и так по низу рынка, ни копейки не скину!»`, "error");
+                }
+            } else if (mode === "facts") {
+                if (!car.inspectedDeep) {
+                    car.patience = 0;
+                    toast(`${car.seller}: «Ты даже сканер не подключал, кого ты лечишь?! Торга нет!»`, "error");
+                } else {
+                    const hasDefects = car.isRolledBack || car.parts.engine < 65 || car.parts.body < 65;
+                    if (hasDefects && Math.random() < 0.80) {
+                        const drop = Math.round(car.askPrice * (0.07 + Math.random() * 0.06));
+                        car.askPrice = Math.max(Math.round(car.minPrice * 0.94), car.askPrice - drop);
+                        toast(`Продавец покраснел из-за косяков по базе и скинул ${fmt(drop)} ₽!`, "success");
+                    } else {
+                        toast(`${car.seller}: «Машина не новая, знал куда ехал. Не нравится — ищи в салоне!»`, "error");
+                    }
+                }
+            } else if (mode === "custom") {
+                const offer = parseInt(document.getElementById("custom-haggle-input").value) || 0;
+                if (offer < car.minPrice * 0.88) {
+                    state.market = state.market.filter(c => c.uid !== uid);
+                    closeModal();
+                    saveState();
+                    renderMarketView();
+                    toast(`${car.seller}: «За такие копейки купи себе самокат!» Продавец психанул и уехал!`, "error");
+                    return;
+                } else if (offer >= car.minPrice) {
+                    car.askPrice = offer;
+                    toast(`${car.seller}: «Уговорил, забирай за ${fmt(offer)} ₽!»`, "success");
+                } else {
+                    const counter = Math.round((car.askPrice + car.minPrice) / 2);
+                    car.askPrice = counter;
+                    toast(`${car.seller}: «За ${fmt(offer)} не отдам. Крайняя цена — ${fmt(counter)} ₽!»`, "info");
+                }
+            }
+
+            saveState();
+            renderMarketView();
+            if (car.patience > 0) {
+                openHaggleDialog(uid);
+            } else {
+                closeModal();
+            }
+        }
+
+        function purchaseMarketCar(uid) {
+            const idx = state.market.findIndex(c => c.uid === uid);
+            if (idx === -1) return;
+            const car = state.market[idx];
+            const maxSlots = REALTY_DB[state.realtyLevel].slots;
+
+            if (state.garage.length >= maxSlots) {
+                toast(`В гараже нет мест (${state.garage.length}/${maxSlots})! Расширь недвижимость во вкладке Синдикат.`, "error");
+                return;
+            }
+            if (state.money < car.askPrice) {
+                toast(`Не хватает ${fmt(car.askPrice - state.money)} ₽ для покупки!`, "error");
+                return;
+            }
+
+            state.money -= car.askPrice;
+            state.stats.bought = (state.stats.bought || 0) + 1;
+            state.market.splice(idx, 1);
+
+            const garageCar = {
+                uid: "g_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+                modelId: car.modelId,
+                name: car.name,
+                class: car.class,
+                basePrice: car.basePrice,
+                boughtFor: car.askPrice,
+                invested: 0,
+                hp: car.hp,
+                body: car.body,
+                color: car.color,
+                mileage: car.realMileage,
+                parts: { ...car.parts },
+                tuning: { tint: false, wheels: false, airride: false, exhaust: false, stage1: false, stage2: false },
+                cooldownUntil: Date.now() + 120000
+            };
+
+            state.garage.push(garageCar);
+            if (!state.collection.includes(car.modelId)) {
+                state.collection.push(car.modelId);
+            }
+
+            playSound('coin');
+            updateTopBar();
+            saveState();
+            renderMarketView();
+            toast(`Куплена ${car.name}! Оформление документов и подготовка: 2 мин.`, "success");
+        }
+
+        /* =========================================================================
+           7. ГАРАЖ, РЕМОНТ И ТЮНИНГ
+           ========================================================================= */
+        function calcCarFairMarketValue(car) {
+            const avgCond = (car.parts.engine + car.parts.gearbox + car.parts.susp + car.parts.body) / 400;
+            let val = car.basePrice * (0.48 + avgCond * 0.56);
+            if (car.parts.engine === 100 && car.parts.gearbox === 100 && car.parts.susp === 100 && car.parts.body === 100) {
+                val *= 1.06;
+            }
+            let tuneBonus = 0;
+            TUNING_CATALOG.forEach(t => {
+                if (car.tuning[t.key]) tuneBonus += car.basePrice * t.priceMult;
+            });
+            return Math.round(val + tuneBonus);
+        }
+
+        function calcCarTotalHP(car) {
+            let bonus = 0;
+            TUNING_CATALOG.forEach(t => {
+                if (car.tuning[t.key]) bonus += t.hpBonus;
+            });
+            const engineFactor = 0.65 + (car.parts.engine / 100) * 0.35;
+            return Math.round((car.hp + bonus) * engineFactor);
+        }
+
+        function renderGarageView() {
+            const maxSlots = REALTY_DB[state.realtyLevel].slots;
+            document.getElementById("ui-garage-slots").innerText = `${state.garage.length} / ${maxSlots}`;
+            const box = document.getElementById("garage-cards");
+
+            if (state.garage.length === 0) {
+                box.innerHTML = `<div class="glass p-8 rounded-2xl text-center text-xs text-slate-400">В гараже пусто. Купи тачку на Авторынке!</div>`;
+                return;
+            }
+
+            const now = Date.now();
+            box.innerHTML = state.garage.map(car => {
+                const fairVal = calcCarFairMarketValue(car);
+                const totalSpent = car.boughtFor + car.invested;
+                const cdLeft = Math.max(0, Math.ceil((car.cooldownUntil - now) / 1000));
+                const mins = Math.floor(cdLeft / 60);
+                const secs = (cdLeft % 60).toString().padStart(2, "0");
+
+                return `
+                <div class="glass rounded-2xl overflow-hidden border border-slate-800">
+                    <div class="car-stage px-4 pt-2">
+                        <div class="flex justify-between items-center text-[10px] font-bold">
+                            <span class="bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded border border-cyan-500/30">${car.class}</span>
+                            <span class="text-slate-400 mono">Вложено всего: <b class="text-white">${fmt(totalSpent)} ₽</b></span>
+                        </div>
+                        ${renderCarSVG(car)}
+                    </div>
+
+                    <div class="p-3.5 space-y-3">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-sm font-black text-white">${car.name}</h3>
+                                <div class="text-[11px] text-slate-400">Мощность: <b class="text-cyan-400">${calcCarTotalHP(car)} л.с.</b></div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[10px] text-slate-400 uppercase font-bold">Оценка рынка</div>
+                                <div class="text-sm font-black text-amber-400 mono">~${fmt(fairVal)} ₽</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 text-[11px]">
+                            <div>
+                                <div class="flex justify-between"><span>Двигатель</span><b class="${car.parts.engine < 60 ? 'text-rose-400' : 'text-emerald-400'}">${car.parts.engine}%</b></div>
+                                <div class="w-full h-1.5 bg-slate-800 rounded-full mt-1"><div class="h-full bg-emerald-400 rounded-full" style="width:${car.parts.engine}%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between"><span>Коробка (КПП)</span><b class="text-white">${car.parts.gearbox}%</b></div>
+                                <div class="w-full h-1.5 bg-slate-800 rounded-full mt-1"><div class="h-full bg-cyan-400 rounded-full" style="width:${car.parts.gearbox}%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between"><span>Ходовая</span><b class="text-white">${car.parts.susp}%</b></div>
+                                <div class="w-full h-1.5 bg-slate-800 rounded-full mt-1"><div class="h-full bg-amber-400 rounded-full" style="width:${car.parts.susp}%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between"><span>Кузов и ЛКП</span><b class="text-white">${car.parts.body}%</b></div>
+                                <div class="w-full h-1.5 bg-slate-800 rounded-full mt-1"><div class="h-full bg-purple-400 rounded-full" style="width:${car.parts.body}%"></div></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="openRepairWorkshop('${car.uid}')" class="btn-press bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-xl text-xs font-bold border border-slate-700">
+                                <i class="fa-solid fa-wrench text-amber-400 mr-1"></i> Ремонт узлов
+                            </button>
+                            <button onclick="openTuningShop('${car.uid}')" class="btn-press bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-xl text-xs font-bold border border-slate-700">
+                                <i class="fa-solid fa-bolt text-cyan-400 mr-1"></i> Стайлинг / Чип
+                            </button>
+                        </div>
+
+                        ${cdLeft > 0 ? `
+                            <div class="w-full bg-amber-500/10 border border-amber-500/40 text-amber-300 py-2.5 px-3 rounded-xl text-xs font-extrabold text-center mono">
+                                <i class="fa-solid fa-clock mr-1"></i> В ремзоне / Оформление: <span class="cd-timer" data-uid="${car.uid}">${mins}:${secs}</span> (Продажа закрыта)
+                            </div>
+                        ` : `
+                            <button onclick="sendCarToSaleyard('${car.uid}')" class="w-full btn-press bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black py-2.5 rounded-xl text-xs shadow-lg">
+                                <i class="fa-solid fa-tags mr-1"></i> Выставить на Площадку Продаж
+                            </button>
+                        `}
+                    </div>
+                </div>`;
+            }).join("");
+        }
+
+        function calcPartRepairCost(car, partKey) {
+            const missing = 100 - car.parts[partKey];
+            if (missing <= 0) return 0;
+            const disc = 1 - REALTY_DB[state.realtyLevel].repairDisc;
+            const weights = { engine: 0.0042, gearbox: 0.0032, susp: 0.0024, body: 0.0030 };
+            return Math.round(car.basePrice * weights[partKey] * missing * disc);
+        }
+
+        function openRepairWorkshop(uid) {
+            const car = state.garage.find(c => c.uid === uid);
+            if (!car) return;
+
+            const partsList = [
+                { key: "engine", label: "Капремонт ДВС" },
+                { key: "gearbox", label: "Переборка КПП" },
+                { key: "susp", label: "Рычаги и Ходовая" },
+                { key: "body", label: "Покраска и Полировка кузова" }
+            ];
+
+            openModal(`
+                <h3 class="text-base font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-screwdriver-wrench text-amber-400"></i> Ремзона: ${car.name}
+                </h3>
+                <p class="text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 p-2.5 rounded-xl">
+                    ⏳ Внимание: любой ремонт узлов запускает технологический таймер <b>2 минуты (120 сек)</b>, во время которого машину нельзя продать!
+                </p>
+                <div class="space-y-2">
+                    ${partsList.map(p => {
+                        const cost = calcPartRepairCost(car, p.key);
+                        const cond = car.parts[p.key];
+                        return `
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                            <div>
+                                <div class="font-bold text-white">${p.label}</div>
+                                <div class="text-[10px] text-slate-400">Состояние: <b class="text-cyan-400">${cond}% ➔ 100%</b></div>
+                            </div>
+                            ${cond >= 100 ? `
+                                <span class="text-emerald-400 font-bold">Идеал</span>
+                            ` : `
+                                <button onclick="executePartRepair('${car.uid}', '${p.key}')" class="btn-press bg-amber-500 text-slate-950 font-black px-3 py-2 rounded-xl mono">
+                                    ${fmt(cost)} ₽
+                                </button>
+                            `}
+                        </div>`;
+                    }).join("")}
+                </div>
+            `);
+        }
+
+        function executePartRepair(uid, partKey) {
+            const car = state.garage.find(c => c.uid === uid);
+            if (!car) return;
+            const cost = calcPartRepairCost(car, partKey);
+            if (cost <= 0) return;
+            if (state.money < cost) {
+                toast("Недостаточно средств для покупки запчастей!", "error");
+                return;
+            }
+
+            state.money -= cost;
+            state.stats.repairs = (state.stats.repairs || 0) + 1;
+            car.invested += cost;
+            car.parts[partKey] = 100;
+            car.cooldownUntil = Date.now() + 120000;
+
+            playSound('click');
+            updateTopBar();
+            saveState();
+            renderGarageView();
+            openRepairWorkshop(uid);
+            toast("Узел отремонтирован до 100%! Таймер 2 мин запущен.", "success");
+        }
+
+        function openTuningShop(uid) {
+            const car = state.garage.find(c => c.uid === uid);
+            if (!car) return;
+
+            openModal(`
+                <h3 class="text-base font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i> Тюнинг-ателье: ${car.name}
+                </h3>
+                <div class="space-y-2">
+                    ${TUNING_CATALOG.map(t => {
+                        const installed = car.tuning[t.key];
+                        const cost = Math.max(12000, Math.round(car.basePrice * (t.priceMult * 0.85)));
+                        return `
+                        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                            <div>
+                                <div class="font-bold text-white"><i class="fa-solid ${t.icon} text-cyan-400 mr-1.5"></i>${t.name}</div>
+                                <div class="text-[10px] text-slate-400">+${t.hpBonus} л.с. • Повышает ликвидность на рынке</div>
+                            </div>
+                            ${installed ? `
+                                <span class="text-emerald-400 font-bold">Установлено</span>
+                            ` : `
+                                <button onclick="installCarTuning('${car.uid}', '${t.key}', ${cost})" class="btn-press bg-cyan-500 text-slate-950 font-black px-3 py-2 rounded-xl mono">
+                                    ${fmt(cost)} ₽
+                                </button>
+                            `}
+                        </div>`;
+                    }).join("")}
+                </div>
+            `);
+        }
+
+        function installCarTuning(uid, key, cost) {
+            const car = state.garage.find(c => c.uid === uid);
+            if (!car || car.tuning[key]) return;
+            if (state.money < cost) {
+                toast("Не хватает денег на тюнинг!", "error");
+                return;
+            }
+            state.money -= cost;
+            state.stats.tunings = (state.stats.tunings || 0) + 1;
+            car.invested += cost;
+            car.tuning[key] = true;
+            car.cooldownUntil = Date.now() + 120000;
+
+            playSound('click');
+            updateTopBar();
+            saveState();
+            renderGarageView();
+            openTuningShop(uid);
+            toast("Тюнинг установлен! Включен таймер работ на 2 мин.", "success");
+        }
+
+        /* =========================================================================
+           8. ПЛОЩАДКА ПРОДАЖ (КОМИССИЯ ПОЛНОСТЬЮ ОТМЕНЕНА - 0%)
+           ========================================================================= */
+        function sendCarToSaleyard(uid) {
+            const car = state.garage.find(c => c.uid === uid);
+            if (!car) return;
+            if (Date.now() < car.cooldownUntil) {
+                toast("Машина еще на КД после ремонта/покупки! Подожди окончания таймера.", "error");
+                return;
+            }
+            const fairVal = calcCarFairMarketValue(car);
+            state.activeSale = {
+                carUid: car.uid,
+                listedPrice: Math.round(fairVal * 1.12),
+                buyer: null,
+                chatLog: []
+            };
+            saveState();
+            openTab("saleyard");
+            spawnNextBuyer();
+        }
+
+        function spawnNextBuyer() {
+            if (!state.activeSale) return;
+            const car = state.garage.find(c => c.uid === state.activeSale.carUid);
+            if (!car) { state.activeSale = null; renderSaleyardView(); return; }
+
+            const fairVal = calcCarFairMarketValue(car);
+            const prof = BUYER_PROFILES[Math.floor(Math.random() * BUYER_PROFILES.length)];
+            const ratio = state.activeSale.listedPrice / fairVal;
+
+            let offer = Math.round(fairVal * (0.86 + Math.random() * 0.16));
+            if (prof.type === "lowballer") offer = Math.round(fairVal * 0.80);
+            if (prof.type === "collector" && car.parts.engine === 100 && car.parts.body === 100) {
+                offer = Math.round(fairVal * 1.12);
+            }
+            offer = Math.min(offer, state.activeSale.listedPrice);
+
+            let greeting = "";
+            if (ratio > 1.25) {
+                greeting = `«Здорово! Ты чего такой космический ценник (${fmt(state.activeSale.listedPrice)} ₽) повесил? Рынок этой тачке — ${fmt(fairVal)} ₽. Могу дать ${fmt(offer)} ₽ наличкой прямо сейчас.»`;
+            } else if (car.parts.engine < 70 || car.parts.body < 70) {
+                greeting = `«Привет. Вижу по кузову и мотору есть нюансы, придется вкладываться. Заберу как есть за ${fmt(offer)} ₽, идет?»`;
+            } else {
+                greeting = `«Салам! Аппарат выглядит бодро. За твою цену дороговато, но за ${fmt(offer)} ₽ готов поехать оформлять прямо сейчас.»`;
+            }
+
+            state.activeSale.buyer = {
+                name: prof.name,
+                avatar: prof.avatar,
+                maxBudget: Math.round(fairVal * prof.maxOverpay),
+                currentOffer: offer,
+                patience: prof.patience,
+                walkedAway: false
+            };
+            state.activeSale.chatLog = [
+                { sender: "buyer", text: greeting }
+            ];
+            saveState();
+            renderSaleyardView();
+        }
+
+        function renderSaleyardView() {
+            const box = document.getElementById("saleyard-container");
+            if (!state.activeSale) {
+                const readyCars = state.garage.filter(c => Date.now() >= c.cooldownUntil);
+                box.innerHTML = `
+                    <div class="glass p-5 rounded-2xl space-y-3 text-center">
+                        <div class="text-sm font-black text-white">Ни одна машина сейчас не выставлена на рынке</div>
+                        <p class="text-xs text-slate-400">Выбери готовую машину из гаража (у которой прошел 2-минутный кулдаун ремонта), чтобы выехать на рынок к покупателям:</p>
+                        <div class="space-y-2 text-left pt-2">
+                            ${readyCars.length === 0 ? `<div class="text-center text-xs text-amber-400">Нет доступных машин (либо гараж пуст, либо идет КД ремонта 2 мин).</div>` :
+                            readyCars.map(c => `
+                                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                                    <div>
+                                        <div class="font-bold text-white">${c.name}</div>
+                                        <div class="text-[10px] text-slate-400">Оценка: ~${fmt(calcCarFairMarketValue(c))} ₽</div>
+                                    </div>
+                                    <button onclick="sendCarToSaleyard('${c.uid}')" class="btn-press bg-emerald-500 text-slate-950 font-black px-3 py-2 rounded-xl">Выставить</button>
+                                </div>
+                            `).join("")}
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            const car = state.garage.find(c => c.uid === state.activeSale.carUid);
+            if (!car) { state.activeSale = null; renderSaleyardView(); return; }
+
+            const fairVal = calcCarFairMarketValue(car);
+            const b = state.activeSale.buyer;
+            // КОМИССИЯ РАВНА 0: Вся сумма покупателя идет игроку без удержаний!
+            const netOffer = b ? b.currentOffer : 0;
+            const totalSpent = car.boughtFor + car.invested;
+            const netProfit = netOffer - totalSpent;
+
+            box.innerHTML = `
+                <div class="glass rounded-2xl p-4 space-y-3 border border-slate-700">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] text-emerald-400 font-bold uppercase"><i class="fa-solid fa-circle-check mr-1"></i>На продаже (Без комиссии)</span>
+                            <h3 class="text-sm font-black text-white">${car.name}</h3>
+                        </div>
+                        <button onclick="cancelSaleyardListing()" class="text-xs text-slate-400 hover:text-white underline">Убрать в гараж</button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 bg-slate-900 p-2.5 rounded-xl border border-slate-800 text-xs">
+                        <div>Себестоимость (вложено): <b class="text-white mono block">${fmt(totalSpent)} ₽</b></div>
+                        <div>Реальная оценка рынка: <b class="text-amber-400 mono block">~${fmt(fairVal)} ₽</b></div>
+                    </div>
+
+                    <div class="flex gap-2 items-center">
+                        <span class="text-xs text-slate-400 font-bold">Ценник на стекле:</span>
+                        <input id="saleyard-price-inp" type="number" value="${state.activeSale.listedPrice}" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs font-black text-white mono">
+                        <button onclick="updateSaleyardPrice()" class="btn-press bg-slate-800 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl text-xs font-bold">Сменить</button>
+                    </div>
+                </div>
+
+                ${b ? `
+                <div class="glass rounded-2xl p-4 space-y-3 border border-amber-500/40">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">${b.avatar}</span>
+                            <div>
+                                <div class="text-xs font-black text-white">${b.name}</div>
+                                <div class="text-[10px] text-slate-400">Терпение покупателя: <b class="text-amber-400">${b.patience}</b></div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[10px] text-slate-400">Дает на руки (без комиссии):</div>
+                            <div class="text-sm font-black text-emerald-400 mono">${fmt(netOffer)} ₽</div>
+                            <div class="text-[10px] font-bold ${netProfit >= 0 ? 'text-emerald-400' : 'text-rose-400'}">(${netProfit >= 0 ? '+' : ''}${fmt(netProfit)} ₽ чистыми)</div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        ${state.activeSale.chatLog.map(msg => `
+                            <div class="p-2.5 rounded-xl text-xs ${msg.sender === 'buyer' ? 'bg-slate-900 text-slate-200 border border-slate-800' : 'bg-cyan-950/60 text-cyan-200 border border-cyan-500/30 ml-6'}">
+                                <div class="text-[10px] font-bold ${msg.sender === 'buyer' ? 'text-amber-400' : 'text-cyan-400'} mb-0.5">${msg.sender === 'buyer' ? b.name : 'Ты (Продавец)'}:</div>
+                                ${msg.text}
+                            </div>
+                        `).join("")}
+                    </div>
+
+                    ${b.walkedAway ? `
+                        <button onclick="spawnNextBuyer()" class="w-full btn-press bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-xs">
+                            🚶‍♂️ Покупатель ушел. Ждать следующего клиента
+                        </button>
+                    ` : `
+                        <div class="space-y-2 pt-1">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="replyToBuyer('praise')" class="btn-press bg-slate-800 hover:bg-slate-700 text-slate-200 p-2.5 rounded-xl text-[11px] font-bold border border-slate-700 text-left">
+                                    💎 «Машина обслужена, сел и поехал! Накинь еще 6%»
+                                </button>
+                                <button onclick="replyToBuyer('firm')" class="btn-press bg-slate-800 hover:bg-slate-700 text-slate-200 p-2.5 rounded-xl text-[11px] font-bold border border-slate-700 text-left">
+                                    🔥 «Дешевле не отдам, за ней уже перекупы едут! (+12%)»
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="acceptBuyerDeal()" class="btn-press bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs shadow-lg">
+                                    🤝 Продать за ${fmt(b.currentOffer)} ₽ (100% тебе)
+                                </button>
+                                <button onclick="spawnNextBuyer()" class="btn-press bg-slate-800 hover:bg-slate-700 text-rose-400 font-bold py-3 rounded-xl text-xs border border-slate-700">
+                                    ❌ Прогнать / Искать другого
+                                </button>
+                            </div>
+                        </div>
+                    `}
+                </div>
+                ` : ''}
+            `;
+        }
+
+        function updateSaleyardPrice() {
+            if (!state.activeSale) return;
+            const val = parseInt(document.getElementById("saleyard-price-inp").value) || 100000;
+            state.activeSale.listedPrice = Math.max(10000, val);
+            playSound('click');
+            toast("Ценник на лобовом стекле обновлен! Ищем нового покупателя...", "info");
+            spawnNextBuyer();
+        }
+
+        function cancelSaleyardListing() {
+            state.activeSale = null;
+            saveState();
+            openTab("garage");
+        }
+
+        function replyToBuyer(strategy) {
+            if (!state.activeSale || !state.activeSale.buyer) return;
+            const b = state.activeSale.buyer;
+            if (b.walkedAway) return;
+
+            b.patience -= 1;
+            const askStep = strategy === "praise" ? 1.06 : 1.12;
+            const desired = Math.round(b.currentOffer * askStep);
+
+            state.activeSale.chatLog.push({
+                sender: "player",
+                text: strategy === "praise"
+                    ? `«Брат, в машину душу и деньги вложил, давай хотя бы ${fmt(desired)} ₽!»`
+                    : `«Таких живых на рынке больше нет! Цена — ${fmt(desired)} ₽ или расходимся.»`
+            });
+
+            if (desired <= b.maxBudget && Math.random() < (strategy === "praise" ? 0.72 : 0.45)) {
+                b.currentOffer = desired;
+                state.activeSale.chatLog.push({
+                    sender: "buyer",
+                    text: `«Ладно, убедил! Подниму до ${fmt(b.currentOffer)} ₽, но это мой потолок. Оформляем?»`
+                });
+            } else if (b.patience <= 0 || strategy === "firm") {
+                b.walkedAway = true;
+                state.activeSale.chatLog.push({
+                    sender: "buyer",
+                    text: `«Не, брат, это перебор. За такие бабки продавай её сам до следующей зимы. Я пошел!»`
+                });
+            } else {
+                const tinyBump = Math.round(b.currentOffer * 1.02);
+                b.currentOffer = Math.min(b.maxBudget, tinyBump);
+                state.activeSale.chatLog.push({
+                    sender: "buyer",
+                    text: `«Слушай, у меня в кармане максимум ${fmt(b.currentOffer)} ₽. Больше реально нет.»`
+                });
+            }
+
+            saveState();
+            renderSaleyardView();
+        }
+
+        function acceptBuyerDeal() {
+            if (!state.activeSale || !state.activeSale.buyer) return;
+            const idx = state.garage.findIndex(c => c.uid === state.activeSale.carUid);
+            if (idx === -1) return;
+
+            const car = state.garage[idx];
+            const gross = state.activeSale.buyer.currentOffer;
+            // КОМИССИЯ УБРАНА: Игрок получает 100%
+            const net = gross;
+            const profit = net - (car.boughtFor + car.invested);
+
+            state.money += net;
+            state.stats.sold = (state.stats.sold || 0) + 1;
+            state.stats.profit = (state.stats.profit || 0) + profit;
+            if (profit > 0) state.rep += 1;
+
+            state.garage.splice(idx, 1);
+            state.activeSale = null;
+
+            playSound('coin');
+            updateTopBar();
+            saveState();
+            renderSaleyardView();
+            toast(`Сделка закрыта! Получено ${fmt(net)} ₽ без комиссии (${profit >= 0 ? '+' : ''}${fmt(profit)} ₽ чистыми)`, "success");
+        }
+
+        /* =========================================================================
+           9. ДРЭГ-РЕЙСИНГ
+           ========================================================================= */
+        const LEAGUES = [
+            { id: 0, name: "Лига 1: Бюджет", bet: 25000, rivalHp: 115, rivalName: "Заряженная Приора" },
+            { id: 1, name: "Лига 2: Улицы", bet: 120000, rivalHp: 285, rivalName: "Mark II Tourer V" },
+            { id: 2, name: "Лига 3: Андеграунд", bet: 650000, rivalHp: 620, rivalName: "BMW M5 F90 Stage 2" },
+            { id: 3, name: "Лига 4: Боссы", bet: 3500000, rivalHp: 1150, rivalName: "Koenigsegg Agera" }
+        ];
+
+        let raceState = null;
+        let raceLoopId = null;
+
+        function populateRacePicker() {
+            const sel = document.getElementById("race-car-picker");
+            if (state.garage.length === 0) {
+                sel.innerHTML = `<option value="">Нет автомобилей в гараже</option>`;
+                return;
+            }
+            sel.innerHTML = state.garage.map(c => `
+                <option value="${c.uid}">${c.name} — ${calcCarTotalHP(c)} л.с. (Мотор: ${c.parts.engine}%)</option>
+            `).join("");
+        }
+
+        function initDragRace(leagueIdx) {
+            const uid = document.getElementById("race-car-picker").value;
+            const car = state.garage.find(c => c.uid === uid);
+            if (!car) {
+                toast("Сначала купи машину в гараж!", "error");
+                return;
+            }
+            const lg = LEAGUES[leagueIdx];
+            if (state.money < lg.bet) {
+                toast(`Не хватает денег на ставку (${fmt(lg.bet)} ₽)!`, "error");
+                return;
+            }
+            if (car.parts.engine < 35) {
+                toast("Мотор слишком убит (<35%)! Почини его в гараже перед гонкой.", "error");
+                return;
+            }
+
+            state.money -= lg.bet;
+            playSound('click');
+            updateTopBar();
+
+            raceState = {
+                league: lg,
+                car: car,
+                playerHp: calcCarTotalHP(car),
+                rivalHp: Math.round(lg.rivalHp * (0.92 + Math.random() * 0.16)),
+                running: false,
+                finished: false,
+                gear: 1,
+                rpm: 1200,
+                speed: 0,
+                playerDist: 0,
+                rivalDist: 0,
+                nitroLeft: 1,
+                roadOffset: 0
+            };
+
+            document.getElementById("race-box").classList.remove("hidden");
+            document.getElementById("race-league-title").innerText = `${lg.name} (Банк: ${fmt(lg.bet * 2)} ₽)`;
+            document.getElementById("race-rival-info").innerText = `${lg.rivalName} (${raceState.rivalHp} л.с.)`;
+            document.getElementById("btn-race-launch").classList.remove("hidden");
+            document.getElementById("btn-race-shift").classList.add("hidden");
+            document.getElementById("btn-race-nitro").classList.add("hidden");
+            drawRaceCanvas();
+        }
+
+        function launchRace() {
+            if (!raceState) return;
+            raceState.running = true;
+            document.getElementById("btn-race-launch").classList.add("hidden");
+            document.getElementById("btn-race-shift").classList.remove("hidden");
+            document.getElementById("btn-race-nitro").classList.remove("hidden");
+
+            playSound('shift');
+            if (raceLoopId) cancelAnimationFrame(raceLoopId);
+            stepRaceFrame();
+        }
+
+        function shiftRaceGear() {
+            if (!raceState || !raceState.running || raceState.gear >= 6) return;
+            const rpm = raceState.rpm;
+            playSound('shift');
+            if (rpm >= 6200 && rpm <= 7500) {
+                raceState.speed += 22;
+                toast("PERFECT SHIFT! Идеальное переключение!", "success");
+            } else if (rpm < 5000) {
+                raceState.speed = Math.max(10, raceState.speed - 12);
+                toast("Слишком рано переключил! Потеря тяги.", "error");
+            }
+            raceState.gear += 1;
+            raceState.rpm = 3400;
+        }
+
+        function triggerNitro() {
+            if (!raceState || !raceState.running || raceState.nitroLeft <= 0) return;
+            raceState.nitroLeft = 0;
+            raceState.speed += 45;
+            playSound('shift');
+            document.getElementById("btn-race-nitro").classList.add("opacity-40");
+            toast("🔥 ЗАКИСЬ АЗОТА АКТИВИРОВАНА!", "info");
+        }
+
+        function stepRaceFrame() {
+            if (!raceState || !raceState.running) return;
+
+            const accel = (raceState.playerHp / 180) / (raceState.gear * 0.55);
+            raceState.rpm = Math.min(8200, raceState.rpm + 68 + accel * 14);
+            if (raceState.rpm < 7800) {
+                raceState.speed += accel * 0.52;
+            } else {
+                raceState.car.parts.engine = Math.max(15, raceState.car.parts.engine - 0.15);
+            }
+
+            const rivalSpeed = (raceState.rivalHp / 165) * 4.1;
+            raceState.playerDist += raceState.speed * 0.042;
+            raceState.rivalDist += rivalSpeed * 0.042;
+            raceState.roadOffset = (raceState.roadOffset + raceState.speed * 0.4) % 40;
+
+            document.getElementById("race-gear").innerText = raceState.gear;
+            document.getElementById("race-speed").innerText = Math.round(raceState.speed);
+            document.getElementById("race-rpm").innerText = Math.round(raceState.rpm);
+            document.getElementById("race-rpm-bar").style.width = Math.min(100, (raceState.rpm / 8200) * 100) + "%";
+
+            drawRaceCanvas();
+
+            if (raceState.playerDist >= 402 || raceState.rivalDist >= 402) {
+                finishDragRace(raceState.playerDist >= raceState.rivalDist);
+                return;
+            }
+
+            raceLoopId = requestAnimationFrame(stepRaceFrame);
+        }
+
+        function drawRaceCanvas() {
+            const cvs = document.getElementById("race-canvas");
+            const ctx = cvs.getContext("2d");
+            ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+            ctx.fillStyle = "#090d16";
+            ctx.fillRect(0, 0, cvs.width, cvs.height);
+
+            ctx.strokeStyle = "#334155";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([18, 18]);
+            ctx.lineDashOffset = raceState ? raceState.roadOffset : 0;
+            ctx.beginPath();
+            ctx.moveTo(0, 75);
+            ctx.lineTo(cvs.width, 75);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            const pX = raceState ? 25 + (raceState.playerDist / 402) * 300 : 25;
+            const rX = raceState ? 25 + (raceState.rivalDist / 402) * 300 : 25;
+
+            ctx.fillStyle = "#ef4444";
+            ctx.fillRect(rX, 28, 46, 22);
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 10px Montserrat";
+            ctx.fillText("СОПЕРНИК", rX - 4, 22);
+
+            ctx.fillStyle = raceState ? raceState.car.color : "#06b6d4";
+            ctx.fillRect(pX, 98, 48, 22);
+            ctx.fillStyle = "#38bdf8";
+            ctx.fillText("ТЫ", pX + 12, 92);
+        }
+
+        function finishDragRace(won) {
+            raceState.running = false;
+            raceState.car.parts.engine = Math.max(10, Math.round(raceState.car.parts.engine - 3));
+            document.getElementById("btn-race-shift").classList.add("hidden");
+            document.getElementById("btn-race-nitro").classList.add("hidden");
+
+            if (won) {
+                const prize = raceState.league.bet * 2;
+                state.money += prize;
+                state.rep += 2;
+                state.stats.wins = (state.stats.wins || 0) + 1;
+                playSound('win');
+                toast(`🏆 ПОБЕДА В ДРЭГЕ! Забрал банк ${fmt(prize)} ₽ и +2 Репутации!`, "success");
+            } else {
+                toast(`Поражение на квотере! Соперник оказался быстрее.`, "error");
+            }
+
+            updateTopBar();
+            saveState();
+        }
+
+        /* =========================================================================
+           10. ВКЛАДКА КВЕСТОВ И ЛОГИКА НАГРАД
+           ========================================================================= */
+        function setQuestFilter(cat) {
+            state.questFilter = cat;
+            document.querySelectorAll(".quest-filter-btn").forEach(btn => {
+                if (btn.dataset.qfilter === cat) {
+                    btn.className = "quest-filter-btn bg-amber-500 text-slate-950 px-3 py-1.5 rounded-xl whitespace-nowrap font-extrabold";
+                } else {
+                    btn.className = "quest-filter-btn bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl whitespace-nowrap font-bold";
+                }
+            });
+            renderQuestsView();
+        }
+
+        function renderQuestsView() {
+            const list = document.getElementById("quests-list");
+            if (!list) return;
+
+            const filter = state.questFilter || "ALL";
+            const filtered = QUESTS_DB.filter(q => filter === "ALL" || q.category === filter);
+
+            const totalClaimed = QUESTS_DB.filter(q => state.claimedQuests.includes(q.id)).length;
+            const counterEl = document.getElementById("quests-total-counter");
+            if (counterEl) counterEl.innerText = `${totalClaimed} / ${QUESTS_DB.length}`;
+
+            list.innerHTML = filtered.map(q => {
+                const isClaimed = state.claimedQuests.includes(q.id);
+                const currentVal = q.getVal(state);
+                const progressPct = Math.min(100, Math.round((currentVal / q.target) * 100));
+                const isReady = currentVal >= q.target && !isClaimed;
+
+                return `
+                <div class="glass p-3.5 rounded-2xl border ${isReady ? 'border-amber-500/70 shadow-lg shadow-amber-500/15' : (isClaimed ? 'border-slate-800/60 opacity-80' : 'border-slate-800')} space-y-2.5">
+                    <div class="flex justify-between items-start gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center ${q.color} text-lg shrink-0">
+                                <i class="fa-solid ${q.icon}"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">${q.category}</span>
+                                    ${isClaimed ? '<span class="text-[9px] font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">ВЫПОЛНЕНО</span>' : ''}
+                                </div>
+                                <h3 class="text-sm font-black text-white mt-0.5">${q.title}</h3>
+                            </div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div class="text-xs font-black text-amber-400 mono">+${fmt(q.rewardMoney)} ₽</div>
+                            <div class="text-[10px] text-cyan-400 font-bold mono">+${q.rewardRep} REP</div>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-slate-300">${q.desc}</p>
+
+                    <!-- Прогресс-бар -->
+                    <div>
+                        <div class="flex justify-between text-[10px] text-slate-400 font-bold mb-1">
+                            <span>Прогресс</span>
+                            <span class="mono">${fmt(Math.min(currentVal, q.target))} / ${fmt(q.target)} (${progressPct}%)</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                            <div class="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-300" style="width: ${progressPct}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопка действия -->
+                    <div class="pt-1">
+                        ${isClaimed ? `
+                            <div class="w-full text-center py-2 text-xs font-black text-emerald-400 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                                <i class="fa-solid fa-circle-check mr-1.5"></i> Награда получена
+                            </div>
+                        ` : (isReady ? `
+                            <button onclick="claimQuestReward('${q.id}')" class="w-full btn-press bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 font-black py-2.5 rounded-xl text-xs shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 animate-pulse">
+                                <i class="fa-solid fa-gift"></i> Забрать награду (+${fmt(q.rewardMoney)} ₽, +${q.rewardRep} REP)
+                            </button>
+                        ` : `
+                            <div class="w-full text-center py-2 text-[11px] font-bold text-slate-500 bg-slate-900/60 rounded-xl border border-slate-800/80">
+                                В процессе выполнения...
+                            </div>
+                        `)}
+                    </div>
+                </div>`;
+            }).join("");
+        }
+
+        function claimQuestReward(qid) {
+            const q = QUESTS_DB.find(item => item.id === qid);
+            if (!q || state.claimedQuests.includes(qid)) return;
+
+            const currentVal = q.getVal(state);
+            if (currentVal < q.target) {
+                toast("Квест еще не выполнен!", "error");
+                return;
+            }
+
+            state.claimedQuests.push(qid);
+            state.money += q.rewardMoney;
+            state.rep += q.rewardRep;
+
+            playSound('win');
+            saveState();
+            updateTopBar();
+            renderQuestsView();
+            toast(`🎉 Квест «${q.title}» сдан! Получено +${fmt(q.rewardMoney)} ₽ и +${q.rewardRep} REP!`, "success");
+        }
+
+        /* =========================================================================
+           11. ЕЖЕДНЕВНЫЙ БОНУС (7-ДНЕВНЫЙ КАЛЕНДАРЬ С ТАЙМЕРОМ)
+           ========================================================================= */
+        function getDailyBonusStatus() {
+            const now = Date.now();
+            const last = state.dailyBonus.lastClaimTime || 0;
+            const cd = 24 * 60 * 60 * 1000; // 24 часа
+
+            if (last === 0) {
+                return { ready: true, streak: 1, timeLeft: 0 };
+            }
+
+            const elapsed = now - last;
+            if (elapsed >= cd) {
+                // Если прошло больше 48 часов, серия сбрасывается на день 1
+                const streak = (elapsed > 48 * 60 * 60 * 1000) ? 1 : ((state.dailyBonus.streak % 7) + 1);
+                return { ready: true, streak: streak, timeLeft: 0 };
+            } else {
+                const nextStreak = (state.dailyBonus.streak % 7) + 1;
+                return { ready: false, streak: nextStreak, timeLeft: cd - elapsed };
+            }
+        }
+
+        function openDailyBonusModal() {
+            const status = getDailyBonusStatus();
+            const currentStreak = state.dailyBonus.streak || 0;
+
+            openModal(`
+                <div class="text-center space-y-1">
+                    <span class="text-3xl">🎁</span>
+                    <h3 class="text-base font-black text-amber-400">Ежедневный Бонус Синдиката</h3>
+                    <p class="text-xs text-slate-400">Заходи в игру каждый день и забирай нарастающий куш! На 7-й день тебя ждет Джекпот — 500 000 ₽!</p>
+                </div>
+
+                <div class="grid grid-cols-4 gap-2 py-2">
+                    ${DAILY_BONUS_TIERS.map(t => {
+                        const isClaimedPast = currentStreak >= t.day && !status.ready;
+                        const isCurrentActive = status.ready && status.streak === t.day;
+                        const isUpcoming = t.day > (status.ready ? status.streak : currentStreak);
+                        const isDay7 = t.day === 7;
+
+                        return `
+                        <div class="${isDay7 ? 'col-span-2' : ''} p-2 rounded-xl text-center border ${isCurrentActive ? 'bg-amber-500/20 border-amber-400 shadow-lg shadow-amber-500/20' : (isClaimedPast ? 'bg-slate-900 border-emerald-500/40 opacity-70' : 'bg-slate-950 border-slate-800')}">
+                            <div class="text-[9px] font-extrabold uppercase ${isCurrentActive ? 'text-amber-300' : 'text-slate-400'}">День ${t.day}</div>
+                            <div class="text-xs font-black text-white mono mt-1">${fmt(t.money)} ₽</div>
+                            <div class="text-[9px] text-cyan-400 font-bold mt-0.5">+${t.rep} REP</div>
+                            <div class="text-[9px] font-bold mt-1">
+                                ${isClaimedPast ? '<span class="text-emerald-400">✅ Взят</span>' : (isCurrentActive ? '<span class="text-amber-400 animate-pulse">🌟 Доступен</span>' : '<span class="text-slate-500">🔒 Скоро</span>')}
+                            </div>
+                        </div>`;
+                    }).join("")}
+                </div>
+
+                <div class="pt-2">
+                    ${status.ready ? `
+                        <button onclick="claimDailyBonus()" class="w-full btn-press bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 text-slate-950 font-black py-3 rounded-2xl text-sm shadow-xl shadow-amber-500/25 animate-pulse">
+                            🎉 Забрать Бонус Дня ${status.streak}: +${fmt(DAILY_BONUS_TIERS[status.streak - 1].money)} ₽!
+                        </button>
+                    ` : `
+                        <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl text-center space-y-1">
+                            <div class="text-[11px] text-slate-400 font-bold">Следующий бонус будет доступен через:</div>
+                            <div id="modal-bonus-countdown" class="text-base font-black text-amber-400 mono">--:--:--</div>
+                        </div>
+                    `}
+                </div>
+            `);
+        }
+
+        function claimDailyBonus() {
+            const status = getDailyBonusStatus();
+            if (!status.ready) {
+                toast("Бонус еще не готов! Подожди отката таймера.", "error");
+                return;
+            }
+
+            const tier = DAILY_BONUS_TIERS[status.streak - 1];
+            state.money += tier.money;
+            state.rep += tier.rep;
+            state.dailyBonus.streak = status.streak;
+            state.dailyBonus.lastClaimTime = Date.now();
+
+            playSound('win');
+            saveState();
+            updateTopBar();
+            closeModal();
+            toast(`🎁 Ежедневный бонус забран! Получено +${fmt(tier.money)} ₽ и +${tier.rep} REP!`, "success");
+        }
+
+        /* =========================================================================
+           12. СИНДИКАТ, НЕДВИЖИМОСТЬ И ЭНЦИКЛОПЕДИЯ
+           ========================================================================= */
+        function renderSyndicateView() {
+            document.getElementById("ui-syndicate-title").innerText = `Семья «${state.syndicate}»`;
+            document.getElementById("stat-sold").innerText = state.stats.sold || 0;
+            document.getElementById("stat-wins").innerText = state.stats.wins || 0;
+            document.getElementById("stat-collection").innerText = `${state.collection.length} / ${CARS_DB.length}`;
+
+            const realtyBox = document.getElementById("realty-cards");
+            realtyBox.innerHTML = REALTY_DB.map(r => {
+                const owned = state.realtyLevel >= r.level;
+                const next = state.realtyLevel + 1 === r.level;
+                return `
+                <div class="bg-slate-900/90 p-3.5 rounded-2xl border ${owned ? 'border-emerald-500/40' : 'border-slate-800'} flex justify-between items-center text-xs">
+                    <div class="pr-2">
+                        <div class="font-black text-white">${r.name}</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">${r.desc}</div>
+                    </div>
+                    <div>
+                        ${owned ? `
+                            <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-xl font-bold whitespace-nowrap">Куплено</span>
+                        ` : (next ? `
+                            <button onclick="purchaseRealty(${r.level})" class="btn-press bg-amber-500 text-slate-950 font-black px-3 py-2 rounded-xl mono whitespace-nowrap">
+                                ${fmt(r.price)} ₽
+                            </button>
+                        ` : `
+                            <span class="text-slate-500 font-bold">Закрыто</span>
+                        `)}
+                    </div>
+                </div>`;
+            }).join("");
+
+            const catGrid = document.getElementById("catalog-grid");
+            catGrid.innerHTML = CARS_DB.map(c => {
+                const unlocked = state.collection.includes(c.id);
+                return `
+                <div class="p-2.5 rounded-xl border ${unlocked ? 'bg-slate-900 border-amber-500/40' : 'bg-slate-950/60 border-slate-800/70 opacity-60'} text-[11px]">
+                    <div class="flex justify-between text-[9px] font-bold">
+                        <span class="text-amber-400">${c.class}</span>
+                        <span>${unlocked ? '✅ В коллекции' : '🔒'}</span>
+                    </div>
+                    <div class="font-extrabold text-white truncate mt-0.5">${c.name}</div>
+                    <div class="text-[10px] text-slate-400 mono">${fmt(c.price)} ₽ • ${c.hp} л.с.</div>
+                </div>`;
+            }).join("");
+        }
+
+        function purchaseRealty(lvl) {
+            const r = REALTY_DB[lvl];
+            if (!r || state.realtyLevel + 1 !== lvl) return;
+            if (state.money < r.price) {
+                toast(`Не хватает денег на покупку недвижимости (${fmt(r.price)} ₽)!`, "error");
+                return;
+            }
+            state.money -= r.price;
+            state.realtyLevel = lvl;
+            state.rep += 5;
+            playSound('coin');
+            updateTopBar();
+            saveState();
+            renderSyndicateView();
+            toast(`Куплено: ${r.name}! Слоты гаража расширены до ${r.slots}!`, "success");
+        }
+
+        function renameSyndicate() {
+            openModal(`
+                <h3 class="text-base font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-pen text-amber-400"></i> Название Синдиката
+                </h3>
+                <p class="text-xs text-slate-400">Введите новое название вашей уличной группировки:</p>
+                <input id="input-syndicate-name" type="text" maxlength="24" value="${state.syndicate}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-amber-500">
+                <div class="grid grid-cols-2 gap-2 pt-2">
+                    <button onclick="closeModal()" class="btn-press bg-slate-800 text-slate-300 font-bold py-2.5 rounded-xl text-xs">Отмена</button>
+                    <button onclick="confirmRenameSyndicate()" class="btn-press bg-amber-500 text-slate-950 font-black py-2.5 rounded-xl text-xs">Сохранить</button>
+                </div>
+            `);
+        }
+
+        function confirmRenameSyndicate() {
+            const el = document.getElementById("input-syndicate-name");
+            if (el && el.value.trim().length > 1) {
+                state.syndicate = el.value.trim().slice(0, 24);
+                saveState();
+                renderSyndicateView();
+                closeModal();
+                toast("Название синдиката сохранено!", "success");
+            }
+        }
+
+        function openProfileModal() {
+            openModal(`
+                <h3 class="text-base font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-id-card text-amber-400"></i> Профиль игрока
+                </h3>
+                <p class="text-xs text-slate-400">Укажите ваше уличное прозвище перекупщика:</p>
+                <input id="input-player-name" type="text" maxlength="18" value="${state.name}" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm font-bold text-white focus:outline-none focus:border-amber-500">
+                <div class="grid grid-cols-2 gap-2 pt-2">
+                    <button onclick="closeModal()" class="btn-press bg-slate-800 text-slate-300 font-bold py-2.5 rounded-xl text-xs">Отмена</button>
+                    <button onclick="confirmPlayerName()" class="btn-press bg-amber-500 text-slate-950 font-black py-2.5 rounded-xl text-xs">Сохранить</button>
+                </div>
+            `);
+        }
+
+        function confirmPlayerName() {
+            const el = document.getElementById("input-player-name");
+            if (el && el.value.trim().length > 1) {
+                state.name = el.value.trim().slice(0, 18);
+                updateTopBar();
+                saveState();
+                closeModal();
+                toast("Имя обновлено!", "success");
+            }
+        }
+
+        /* =========================================================================
+           13. ИНТЕРФЕЙС, НАВИГАЦИЯ И СИНХРОНИЗАЦИЯ ТАЙМЕРОВ
+           ========================================================================= */
+        function openTab(tab) {
+            playSound('click');
+            document.querySelectorAll(".tab-view").forEach(el => el.classList.remove("active"));
+            document.querySelectorAll(".nav-item").forEach(el => {
+                el.classList.remove("text-amber-400");
+                el.classList.add("text-slate-400");
+            });
+
+            const targetView = document.getElementById(`view-${tab}`);
+            if (targetView) targetView.classList.add("active");
+
+            const btn = document.getElementById(`tabbtn-${tab}`);
+            if (btn) {
+                btn.classList.remove("text-slate-400");
+                btn.classList.add("text-amber-400");
+            }
+
+            if (tab === "market") renderMarketView();
+            if (tab === "garage") renderGarageView();
+            if (tab === "saleyard") renderSaleyardView();
+            if (tab === "races") populateRacePicker();
+            if (tab === "quests") renderQuestsView();
+            if (tab === "syndicate") renderSyndicateView();
+        }
+
+        function updateTopBar() {
+            document.getElementById("ui-name").innerText = state.name;
+            document.getElementById("ui-money").innerText = fmt(state.money) + " ₽";
+            document.getElementById("ui-rep").innerText = state.rep;
+            document.getElementById("badge-garage").innerText = state.garage.length;
+
+            let rank = "Пешеход";
+            if (state.rep >= 5) rank = "Уличный перекуп";
+            if (state.rep >= 15) rank = "Акула Авторынка";
+            if (state.rep >= 35) rank = "Глава Синдиката";
+            if (state.rep >= 75) rank = "Король Улиц";
+            document.getElementById("ui-rank").innerText = rank;
+
+            // Обновляем бейдж готовых квестов
+            const readyQuestsCount = QUESTS_DB.filter(q => !state.claimedQuests.includes(q.id) && q.getVal(state) >= q.target).length;
+            const questBadge = document.getElementById("badge-quests");
+            if (questBadge) {
+                if (readyQuestsCount > 0) {
+                    questBadge.classList.remove("hidden");
+                    questBadge.innerText = readyQuestsCount;
+                } else {
+                    questBadge.classList.add("hidden");
+                }
+            }
+            const quickQuestsBadge = document.getElementById("quick-quests-badge");
+            if (quickQuestsBadge) {
+                const totalClaimed = state.claimedQuests ? state.claimedQuests.length : 0;
+                quickQuestsBadge.innerText = readyQuestsCount > 0 ? `+${readyQuestsCount} ГОТОВО` : `${totalClaimed} / ${QUESTS_DB.length}`;
+                if (readyQuestsCount > 0) {
+                    quickQuestsBadge.className = "text-[10px] mono font-black bg-amber-400 text-slate-950 px-2 py-0.5 rounded-lg animate-pulse";
+                } else {
+                    quickQuestsBadge.className = "text-[10px] mono font-black bg-cyan-500 text-slate-950 px-2 py-0.5 rounded-lg";
+                }
+            }
+
+            // Обновляем статус ежедневного бонуса
+            updateDailyBonusHeaderBadge();
+        }
+
+        function updateDailyBonusHeaderBadge() {
+            const status = getDailyBonusStatus();
+            const badge = document.getElementById("quick-bonus-badge");
+            if (!badge) return;
+
+            if (status.ready) {
+                badge.innerText = "ГОТОВ!";
+                badge.className = "text-[10px] mono font-black bg-amber-500 text-slate-950 px-2 py-0.5 rounded-lg animate-pulse";
+            } else {
+                const leftSec = Math.ceil(status.timeLeft / 1000);
+                const h = Math.floor(leftSec / 3600);
+                const m = Math.floor((leftSec % 3600) / 60);
+                const s = leftSec % 60;
+                const timeStr = `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+                badge.innerText = timeStr;
+                badge.className = "text-[10px] mono font-bold bg-slate-800 text-amber-300 px-2 py-0.5 rounded-lg border border-slate-700";
+
+                const modalCountdown = document.getElementById("modal-bonus-countdown");
+                if (modalCountdown) modalCountdown.innerText = timeStr;
+            }
+        }
+
+        function openModal(html) {
+            playSound('click');
+            document.getElementById("modal-body").innerHTML = html;
+            const ov = document.getElementById("modal-overlay");
+            ov.classList.remove("hidden");
+            ov.classList.add("flex");
+        }
+
+        function closeModal() {
+            const ov = document.getElementById("modal-overlay");
+            ov.classList.add("hidden");
+            ov.classList.remove("flex");
+        }
+
+        function toast(msg, type = "info") {
+            const box = document.getElementById("toast-box");
+            const el = document.createElement("div");
+            const styles = {
+                success: "bg-emerald-950/95 border-emerald-500 text-emerald-200",
+                error: "bg-rose-950/95 border-rose-500 text-rose-200",
+                info: "bg-slate-900/95 border-cyan-500 text-cyan-200"
+            };
+            el.className = `${styles[type] || styles.info} border px-4 py-2.5 rounded-2xl text-xs font-extrabold shadow-2xl max-w-sm text-center transition-all duration-300`;
+            el.innerText = msg;
+            box.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = "0";
+                setTimeout(() => el.remove(), 280);
+            }, 2600);
+        }
+
+        // ЕЖЕСЕКУНДНЫЙ ТАЙМЕР: КД РЕМОНТА, ТАЙМЕР БОНУСА И СИНХРОНИЗАЦИЯ
+        setInterval(() => {
+            const now = Date.now();
+            const timers = document.querySelectorAll(".cd-timer");
+            let shouldReRenderGarage = false;
+            timers.forEach(t => {
+                const uid = t.getAttribute("data-uid");
+                const car = state.garage.find(c => c.uid === uid);
+                if (car) {
+                    const left = Math.max(0, Math.ceil((car.cooldownUntil - now) / 1000));
+                    if (left <= 0) {
+                        shouldReRenderGarage = true;
+                    } else {
+                        const m = Math.floor(left / 60);
+                        const s = (left % 60).toString().padStart(2, "0");
+                        t.innerText = `${m}:${s}`;
+                    }
+                }
+            });
+            if (shouldReRenderGarage && document.getElementById("view-garage").classList.contains("active")) {
+                renderGarageView();
+            }
+
+            updateDailyBonusHeaderBadge();
+        }, 1000);
+
+        // ИНИЦИАЛИЗАЦИЯ ИГРЫ
+        loadState();
+        updateTopBar();
+        renderMarketView();
+    </script>
+</body>
+</html>
+```
